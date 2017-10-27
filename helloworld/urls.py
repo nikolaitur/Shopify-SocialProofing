@@ -16,7 +16,10 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
+from . import views
+
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^giftbasket/auth', admin.site.urls),
+    url(r'$', views.index, name='index'),
+    url(r'^admin/', views.index, name='index1'),
+    url(r'^giftbasket/auth', views.index, name='index2'),
 ]
