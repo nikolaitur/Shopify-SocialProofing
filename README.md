@@ -1,53 +1,46 @@
-# Heroku Django Starter Template
+# Shopify Socialproofing App Repository
 
-An utterly fantastic project starter template for Django 1.11.
+[![Build Status](https://travis-ci.com/johnsliao/Shopify-SocialProofing.svg?token=e17eeXXt29Y4Pr7HVhoa&branch=development)](https://travis-ci.com/johnsliao/Shopify-SocialProofing)
 
-## Features
+### Pre-requisites
+* Up to Python 3.6.3 installed
 
-- Production-ready configuration for Static Files, Database Settings, Gunicorn, etc.
-- Enhancements to Django's static file serving functionality via WhiteNoise.
-- Latest Python 3.6 runtime environment. 
+### Setting up your development environment
+* Clone the repository
+* Set up your virtual environment
 
-## How to Use
+```buildoutcfg
+$ virtualenv -p python3 venv
+$ source venv/bin/activate
+```
 
-To use this project, follow these steps:
+* Install dependencies
+```buildoutcfg
+$ pip install -r requirements.txt
+```
+* Run the server
+```buildoutcfg
+$ python3 manage.py runserver
+```
+You should see something like:
+```buildoutcfg
+(venv) dtl-macbook1:Shopify-SocialProofing jliaolocal$ python3 manage.py runserver
+ 
+Performing system checks...
 
-1. Create your working environment.
-2. Install Django (`$ pip install django`)
-3. Create a new project using this template
+System check identified no issues (0 silenced).
 
-## Creating Your Project
+You have 13 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth, contenttypes, sessions.
+Run 'python manage.py migrate' to apply them.
 
-Using this template to create a new Django app is easy::
+October 31, 2017 - 17:20:00
+Django version 1.11.1, using settings 'app.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+```
 
-    $ django-admin.py startproject --template=https://github.com/heroku/heroku-django-template/archive/master.zip --name=Procfile helloworld
-
-(If this doesn't work on windows, replace `django-admin.py` with `django-admin`)
-
-You can replace ``helloworld`` with your desired project name.
-
-## Deployment to Heroku
-
-    $ git init
-    $ git add -A
-    $ git commit -m "Initial commit"
-
-    $ heroku create
-    $ git push heroku master
-
-    $ heroku run python manage.py migrate
-
-See also, a [ready-made application](https://github.com/heroku/python-getting-started), ready to deploy.
-
-## Using Python 2.7?
-
-Just update `runtime.txt` to `python-2.7.13` (no trailing spaces or newlines!).
-
-
-## License: MIT
-
-## Further Reading
-
-- [Gunicorn](https://warehouse.python.org/project/gunicorn/)
-- [WhiteNoise](https://warehouse.python.org/project/whitenoise/)
-- [dj-database-url](https://warehouse.python.org/project/dj-database-url/)
+### Running tests
+To run the tests manually, use the following command:
+```buildoutcfg
+$ python3 manage.py test
+```
