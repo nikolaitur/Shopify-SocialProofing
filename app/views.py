@@ -9,22 +9,23 @@ API_KEY = os.environ.get('API_KEY')
 API_SECRET = os.environ.get('API_SECRET')
 
 
-def index(request):
+def authenticate_app(request):
+    """
+    If the user goes to this view, it would redirect them to the shopify page to authenticate our app.
+    :param request: HTTPRequest object
+    :return:        Redirect to shopify page to authenticate our app
+    """
     redirect_uri = 'http://protected-reef-37693.herokuapp.com/auth/callback'
     scope = ['write_products', 'read_products']
 
     shopify.Session.setup(api_key=API_KEY, secret=API_SECRET)
 
     shop = urlparse(request.build_absolute_uri())[1]
-    shop = 'https://michael-john-devs.myshopify.com'  # For TEST. Turn off in production
-    print('The parsed shop is {}'.format(shop))
 
     # instantiate shop session
     session = shopify.Session(shop)
 
     permission_url = session.create_permission_url(scope=scope, redirect_uri=redirect_uri)
-
-    print('Permission url is {}'.format(permission_url))
 
     return redirect(permission_url)
 
