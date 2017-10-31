@@ -49,4 +49,5 @@ def retrieve_token(request):
 
     print('Received permanent token: {}'.format(token))
 
-    return redirect('http://google.com')
+    # Return the user back to their shop
+    return redirect(params['shop'])
