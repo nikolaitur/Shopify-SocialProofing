@@ -4,7 +4,7 @@ from django.db import models
 
 
 class Stores(models.Model):
-    store_name = models.CharField(max_length=200)
+    store_name = models.CharField(max_length=200, unique=True)
     permanent_token = models.CharField(max_length=200)
 
     def __str__(self):
