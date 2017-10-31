@@ -13,6 +13,8 @@ class AuthenticationTests(TestCase):
         # Test that we return the correct redirect for a valid shop url
         response = self.client.get(reverse('authenticate_app'), SERVER_NAME='mystore.myshopify.com')
 
+        print(response.url)
+
         # Valid url should redirect
         self.assertEqual(response.status_code, 302)
 
