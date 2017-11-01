@@ -20,6 +20,6 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    url(r'^authenticate_app/?$', views.authenticate_app, name='authenticate_app'),
-    url(r'^auth/callback/?$', views.retrieve_token, name='retrieve_token'),
+    url(r'^install/?$', views.install, name='install'),
+    url(r'^auth/callback/?$', views.auth_callback, name='auth_callback'),
 ]

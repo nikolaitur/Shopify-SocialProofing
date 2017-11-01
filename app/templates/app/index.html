@@ -1,0 +1,26 @@
+<head>
+  <script src="https://cdn.shopify.com/s/assets/external/app.js"></script>
+  <script type="text/javascript">
+    ShopifyApp.init({
+      apiKey: {{ api_key }},
+      shopOrigin: 'https://{{ shop }}.myshopify.com'
+    });
+  </script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <!--<link rel='stylesheet' href='/stylesheets/foundation.min.css' />
+  <link rel='stylesheet' href='/stylesheets/style.css' />-->
+  <title>
+    {{ shop }}
+  </title>
+</head>
+
+<body>
+<script type="text/javascript">
+    ShopifyApp.ready(function(){
+        ShopifyApp.Bar.initialize({
+            title: 'Hello Shopify - Index'
+        });
+    });
+</script>
+Hello World!
+</body>
