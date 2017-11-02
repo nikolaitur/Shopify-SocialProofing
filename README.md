@@ -16,10 +16,11 @@ $ git clone https://github.com/johnsliao/Shopify-SocialProofing.git
 $ virtualenv -p python3 venv
 $ source venv/bin/activate
 ```
-* Set your environement variables. (Subject to change)
+* Set your environment variables.
 ```
 $ export API_KEY=<API_KEY>
 $ export API_SECRET=<API_SECRET>
+$ export DEVELOPMENT_MODE=TEST  # Must be 'TEST' or 'PRODUCTION'
 ```
 * Install dependencies
 ```

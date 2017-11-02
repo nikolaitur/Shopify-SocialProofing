@@ -1,5 +1,6 @@
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 import fnmatch
 
@@ -21,7 +22,23 @@ class AuthenticationTests(TestCase):
                                         'https://mystore.myshopify.com/admin/oauth/authorize'
                                         '?client_id=*&scope=*&redirect_uri=*'))
 
+    def test_check_security_validation_based_on_env(self):
+        with self.settings(DEVELOPMENT_MODE='PRODUCTION'):
+            response = self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
+            self.assertEqual(response.status_code, 400)
+
+        with self.settings(DEVELOPMENT_MODE='TEST'):
+            response = self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
+            self.assertEqual(response.status_code, 200)
+
 
 class DevelopmentToProductionDeploymentTest(TestCase):
-    def test_development_settings_turned_off(self):
-        pass
+    """
+    These tests ensure that the environment is correct when deploying to production.
+    """
+
+    def test_check_security_validation_is_on(self):
+        # If environment variable is PRODUCTION, we should get bad response for bad requests
+        if settings.DEVELOPMENT_MODE == 'PRODUCTION':
+            response = self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
+            self.assertEqual(response.status_code, 400)

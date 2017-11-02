@@ -25,10 +25,11 @@ def index(request):
             'shop': request.GET['shop'],
             'timestamp': request.GET['timestamp'],
         }
-        print(params)
+
         session = shopify.Session(params['shop'])
-        if not session.validate_params(params=params):
-            raise Exception('Invalid HMAC: Possibly malicious login')
+        if settings.DEVELOPMENT_MODE == 'PRODUCTION':
+            if not session.validate_params(params=params):
+                raise Exception('Invalid HMAC: Possibly malicious login')
 
         context = {
             'api_key': settings.API_KEY,
