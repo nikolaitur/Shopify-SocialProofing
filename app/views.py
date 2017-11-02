@@ -11,22 +11,24 @@ import shopify
 
 
 @xframe_options_exempt
-def index(request, *args, **kwargs):
+def index(request):
     """
     This view is the embedded app shown in their store.
     """
     shopify.Session.setup(api_key=settings.API_KEY, secret=settings.API_SECRET)
     template = loader.get_template('app/index.html')
-
     try:
         params = {
-            'timestamp': request.GET['timestamp'],
             'hmac': request.GET['hmac'],
-            'shop': request.GET['shop']
+            'locale': request.GET['locale'],
+            'protocol': request.GET['protocol'],
+            'shop': request.GET['shop'],
+            'timestamp': request.GET['timestamp'],
         }
-
+        print(params)
         session = shopify.Session(params['shop'])
-        session.validate_params(params=params)
+        if not session.validate_params(params=params):
+            raise Exception('Invalid HMAC: Possibly malicious login')
 
         context = {
             'api_key': settings.API_KEY,
