@@ -9,7 +9,6 @@ from .models import Stores
 
 import shopify
 
-
 @xframe_options_exempt
 def index(request):
     """
@@ -40,22 +39,6 @@ def index(request):
     except Exception:
         return HttpResponseBadRequest('<h1>Something bad happened.</h1>')
 
-def modal(request):
-    """
-    This view is the modal that loads on a product page.
-    """
-    shopify.Session.setup(api_key=settings.API_KEY, secret=settings.API_SECRET)
-    template = loader.get_template('app/modal.html')
-    try:
-        session = shopify.Session(params['shop'])
-        context = {
-            'api_key': settings.API_KEY,
-            'shop': params['shop'],
-        }
-
-        return HttpResponse(template.render(context, request))
-    except Exception:
-        return HttpResponseBadRequest('<h1>Something bad happened.</h1>')
 
 def install(request):
     """
