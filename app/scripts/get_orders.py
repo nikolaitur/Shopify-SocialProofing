@@ -2,6 +2,10 @@
 # More information here: https://help.shopify.com/api/reference
 
 import shopify
+import ssl
+
+# Overrides the default function for context creation with the function to create an unverified context.
+ssl._create_default_https_context = ssl._create_unverified_context
 
 # Authentication
 token = 'e8c49b1c40bde5e8bf956703f5f62797'
@@ -10,11 +14,11 @@ shopify.ShopifyResource.activate_session(session)
 
 # Get orders as a list
 orders = shopify.Order.find()
-print orders  # Order list, for example [order(168793374751)]
+print(orders)  # Order list, for example [order(168793374751)]
 
 # Loop through each order and print out attributes of each order
 for order in orders:
-    print order.__dict__    # Print all attributes of an order
+    print(order.__dict__)  # Print all attributes of an order
 
 # Sample output of a single order
 '''
