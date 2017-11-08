@@ -4,6 +4,7 @@ from urllib.parse import urlparse, parse_qs
 from django.template import loader
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.conf import settings
+from django.contrib.staticfiles.templatetags import staticfiles
 
 from .models import Stores
 
@@ -39,6 +40,13 @@ def index(request):
     except Exception:
         return HttpResponseBadRequest('<h1>Something bad happened.</h1>')
 
+def modal(request):
+    """
+    This view is the modal that loads on a product page.
+    """
+    return HttpResponse("<script src='{src}'></script>".format(
+        src = staticfiles.static('app/modal.js')
+    ))
 
 def install(request):
     """

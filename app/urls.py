@@ -20,6 +20,7 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^modal/?$', views.modal, name='modal'),
     url(r'^install/?$', views.install, name='install'),
     url(r'^auth/callback/?$', views.auth_callback, name='auth_callback'),
 ]
