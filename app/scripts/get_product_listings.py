@@ -2,6 +2,10 @@
 # More information here: https://help.shopify.com/api/reference
 
 import shopify
+import ssl
+
+# Overrides the default function for context creation with the function to create an unverified context.
+ssl._create_default_https_context = ssl._create_unverified_context
 
 # Authentication
 token = 'e8c49b1c40bde5e8bf956703f5f62797'
@@ -13,7 +17,7 @@ product_listings = shopify.Product.find()
 
 # Loop through and print out attributes of each product
 for product_listing in product_listings:
-    print product_listing.__dict__
+    print(product_listing.__dict__)
 
 # Sample output
 
