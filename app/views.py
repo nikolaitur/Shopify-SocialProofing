@@ -43,15 +43,7 @@ def index(request):
     except Exception as e:
         logger.error(e)
         return HttpResponseBadRequest('<h1>Something bad happened.</h1>')
-
-def modal(request):
-    """
-    This view is the modal that loads on a product page.
-    """
-    return HttpResponse("<script src='{src}'></script>".format(
-        src = staticfiles.static('app/modal.js')
-    ))
-
+    
 def install(request):
     """
     Redirect user to the shopify page to authenticate our app.
