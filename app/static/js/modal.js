@@ -9,8 +9,7 @@
 
     var element = document.getElementById("MainContent");
     element.appendChild(para);
-    
+
     var script = document.createElement("script");
-    script.src = "https://protected-reef-37693.herokuapp.com/app/static/js/modal.js";
     document.head.appendChild(script);
   }());
