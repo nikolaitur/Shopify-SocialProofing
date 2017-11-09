@@ -33,7 +33,7 @@ $ python3 manage.py runserver
 You should see something like:
 ```
 (venv) dtl-macbook1:Shopify-SocialProofing jliaolocal$ python3 manage.py runserver
- 
+
 Performing system checks...
 
 System check identified no issues (0 silenced).
@@ -46,6 +46,12 @@ Django version 1.11.1, using settings 'app.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 ```
+
+In order to build the front end bundle, navigate to `app/react`
+From the directory with the package.json, run `npm install` to have all the node_modules.
+
+Now run `npm run build` in order to compile the bundle.js. It should show up in static/app/bundle.js folder where it can be required in by
+any html file.
 
 ### Shopify Development Store
 [Shopify Partners](https://partners.shopify.com)
