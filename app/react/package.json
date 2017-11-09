@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "prebuild": "shx rm -rf build && shx mkdir build && shx cp src/index.html build",
-    "build": "browserify src/index.js -o build/bundle.js",
+    "build": "browserify src/index.js -o ../static/app/bundle.js",
     "start": "yarn build && budo src/index.js:bundle.js --dir build --live --open"
   },
   "dependencies": {
