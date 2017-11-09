@@ -9,6 +9,9 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from .models import Stores
 
 import shopify
+import logging
+
+logger = logging.getLogger(__name__)
 
 @xframe_options_exempt
 def index(request):
@@ -37,7 +40,8 @@ def index(request):
         }
 
         return HttpResponse(template.render(context, request))
-    except Exception:
+    except Exception as e:
+        logger.error(e)
         return HttpResponseBadRequest('<h1>Something bad happened.</h1>')
 
 def modal(request):
@@ -53,12 +57,17 @@ def install(request):
     Redirect user to the shopify page to authenticate our app.
     Example request from: https://mystore.myshopify.com
     """
-    shopify.Session.setup(api_key=settings.API_KEY, secret=settings.API_SECRET)
-    shop = urlparse(request.build_absolute_uri())[1]
-    session = shopify.Session(shop)
-    permission_url = session.create_permission_url(scope=settings.SHOPIFY_API_SCOPE,
-                                                   redirect_uri=settings.SHOPIFY_AUTH_CALLBACK_URL)
-    return redirect(permission_url)
+    try:
+        shopify.Session.setup(api_key=settings.API_KEY, secret=settings.API_SECRET)
+        shop = urlparse(request.build_absolute_uri())[1]
+        session = shopify.Session(shop)
+        permission_url = session.create_permission_url(scope=settings.SHOPIFY_API_SCOPE,
+                                                       redirect_uri=settings.SHOPIFY_AUTH_CALLBACK_URL)
+        return redirect(permission_url)
+
+    except Exception as e:
+        logger.error(e)
+        return HttpResponseBadRequest('<h1>Something bad happened.</h1>')
 
 
 def auth_callback(request):
@@ -85,5 +94,6 @@ def auth_callback(request):
 
         # Return the user back to their shop
         return redirect('https://' + params['shop'])
-    except Exception:
+    except Exception as e:
+        logger.error(e)
         return HttpResponseBadRequest('<h1>Something bad happened.</h1>')
