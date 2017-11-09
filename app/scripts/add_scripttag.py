@@ -16,12 +16,6 @@ shopify.ShopifyResource.activate_session(session)
 print(shopify.ScriptTag().count())
 
 # Add script tag to the shop
-<<<<<<< HEAD
 shopify.ScriptTag(dict(display_scope='all', event='onload', src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js')).save()
 shopify.ScriptTag(dict(display_scope='all', event='onload', src='https://rawgit.com/notifyjs/notifyjs/master/dist/notify.js')).save()
 shopify.ScriptTag(dict(display_scope='all', event='onload', src='https://drive.google.com/file/d/1o0ABWc1b5-KGpl0om3WFJ-1y7c7UWAcl/view?usp=sharing')).save()
-=======
-#shopify.ScriptTag(dict(display_scope='all', event='onload', src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js')).save()
-#shopify.ScriptTag(dict(display_scope='all', event='onload', src='https://rawgit.com/notifyjs/notifyjs/master/dist/notify.js')).save()
-shopify.ScriptTag(dict(display_scope='all', event='onload', src='https://protected-reef-37693.herokuapp.com/modal')).save()
->>>>>>> 63477308ee45b895103bb3d0d53a80b67298e898
