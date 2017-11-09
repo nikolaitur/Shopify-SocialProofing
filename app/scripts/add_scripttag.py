@@ -8,7 +8,7 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 # Authentication
-token = 'e8c49b1c40bde5e8bf956703f5f62797'
+token = '11461aafd388df61fa87b44dfe1fe430'
 session = shopify.Session("michael-john-devs.myshopify.com", token)
 shopify.ShopifyResource.activate_session(session)
 
@@ -16,6 +16,6 @@ shopify.ShopifyResource.activate_session(session)
 print(shopify.ScriptTag().count())
 
 # Add script tag to the shop
-shopify.ScriptTag(dict(display_scope='all', event='onload', src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js')).save()
-shopify.ScriptTag(dict(display_scope='all', event='onload', src='https://rawgit.com/notifyjs/notifyjs/master/dist/notify.js')).save()
-shopify.ScriptTag(dict(display_scope='all', event='onload', src='https://protected-reef-37693.herokuapp.com/modal')).save()
+#shopify.ScriptTag(dict(display_scope='all', event='onload', src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js')).save()
+#shopify.ScriptTag(dict(display_scope='all', event='onload', src='https://rawgit.com/notifyjs/notifyjs/master/dist/notify.js')).save()
+shopify.ScriptTag(dict(display_scope='all', event='onload', src='https://protected-reef-37693.herokuapp.com/static/js/modal.js')).save()

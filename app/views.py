@@ -4,6 +4,7 @@ from urllib.parse import urlparse, parse_qs
 from django.template import loader
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.conf import settings
+from django.contrib.staticfiles.templatetags import staticfiles
 
 from .models import Stores
 
@@ -11,7 +12,6 @@ import shopify
 import logging
 
 logger = logging.getLogger(__name__)
-
 
 @xframe_options_exempt
 def index(request):
@@ -43,8 +43,7 @@ def index(request):
     except Exception as e:
         logger.error(e)
         return HttpResponseBadRequest('<h1>Something bad happened.</h1>')
-
-
+    
 def install(request):
     """
     Redirect user to the shopify page to authenticate our app.

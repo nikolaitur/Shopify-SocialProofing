@@ -7,14 +7,15 @@
     });
   </script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-  <!--<link rel='stylesheet' href='/stylesheets/foundation.min.css' />
-  <link rel='stylesheet' href='/stylesheets/style.css' />-->
   <title>
     {{ shop }}
   </title>
+  <link rel="stylesheet" href="https://sdks.shopifycdn.com/polaris/1.8.3/polaris.min.css" />
 </head>
 
 <body>
+<!--Root Element for React -->
+<div id="root"></div>
 <script type="text/javascript">
     ShopifyApp.ready(function(){
         ShopifyApp.Bar.initialize({
@@ -22,5 +23,9 @@
         });
     });
 </script>
+
 Hello World!
 </body>
+
+{% load static %}
+<script src="{% static 'app/bundle.js' %}"></script>
