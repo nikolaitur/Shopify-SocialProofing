@@ -1,1 +1,109 @@
 ERROR 2017-11-09 22:07:50,747 views 95380 123145398304768 "'hmac'"
+ERROR 2017-11-10 01:37:20,835 views 16560 123145337757696 "'hmac'"
+ERROR 2017-11-10 21:51:00,166 views 18884 123145563537408 "'hmac'"
+ERROR 2017-11-10 21:51:48,608 views 18909 140736463795136 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-10 21:51:48,616 views 18909 140736463795136 Missing staticfiles manifest entry for 'app/bundle.js'
+ERROR 2017-11-12 20:24:57,751 views 19693 140736463795136 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-12 20:24:57,760 views 19693 140736463795136 Missing staticfiles manifest entry for 'app/bundle.js'
+ERROR 2017-11-12 20:25:36,581 views 19726 140736463795136 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 20:26:57,473 utils 65915 123145320681472 'shop'
+ERROR 2017-11-13 20:27:49,229 utils 67058 123145456480256 'shop'
+ERROR 2017-11-13 20:28:08,569 utils 67549 123145479929856 'shop'
+ERROR 2017-11-13 20:28:41,132 utils 68365 123145486032896 'shop'
+ERROR 2017-11-13 20:28:50,506 utils 68365 123145486032896 'shop'
+ERROR 2017-11-13 20:29:25,620 utils 69348 123145433493504 'shop'
+ERROR 2017-11-13 20:30:14,554 utils 69348 123145438748672 'shop'
+ERROR 2017-11-13 20:30:15,778 utils 70169 123145540038656 'shop'
+ERROR 2017-11-13 20:30:16,426 utils 70169 123145545293824 'shop'
+ERROR 2017-11-13 20:30:17,809 views 70169 123145545293824 'function' object has no attribute 'API_KEY'
+ERROR 2017-11-13 20:30:23,800 utils 70169 123145545293824 'shop'
+ERROR 2017-11-13 20:32:14,786 views 72450 140736254014400 'function' object has no attribute 'API_KEY'
+ERROR 2017-11-13 20:32:14,790 utils 72450 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 20:35:32,857 views 75748 140736254014400 'function' object has no attribute 'API_KEY'
+ERROR 2017-11-13 20:35:32,861 utils 75748 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 20:36:11,219 utils 76243 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 20:37:40,433 views 77739 140736254014400 'function' object has no attribute 'API_KEY'
+ERROR 2017-11-13 20:37:40,436 utils 77739 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 20:37:53,831 views 77737 123145558925312 'function' object has no attribute 'API_KEY'
+ERROR 2017-11-13 20:38:46,159 views 81064 123145320402944 'function' object has no attribute 'API_KEY'
+ERROR 2017-11-13 20:38:53,256 views 81064 123145325658112 'function' object has no attribute 'API_KEY'
+ERROR 2017-11-13 20:40:51,003 views 83034 123145326456832 'function' object has no attribute 'API_KEY'
+ERROR 2017-11-13 20:40:52,961 utils 83034 123145331712000 'shop'
+ERROR 2017-11-13 20:40:53,728 utils 83034 123145326456832 'shop'
+ERROR 2017-11-13 20:40:58,906 utils 83034 123145326456832 'shop'
+ERROR 2017-11-13 20:40:59,687 utils 83034 123145331712000 'shop'
+ERROR 2017-11-13 20:40:59,903 utils 83034 123145331712000 'shop'
+ERROR 2017-11-13 20:41:00,101 utils 83034 123145331712000 'shop'
+ERROR 2017-11-13 20:41:00,263 utils 83034 123145331712000 'shop'
+ERROR 2017-11-13 20:41:00,431 utils 83034 123145331712000 'shop'
+ERROR 2017-11-13 20:41:40,948 views 84014 140736254014400 'function' object has no attribute 'API_KEY'
+ERROR 2017-11-13 20:41:40,953 utils 84014 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 20:41:57,417 utils 84350 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 20:43:04,696 views 83851 123145553240064 'function' object has no attribute 'API_KEY'
+ERROR 2017-11-13 20:43:06,057 views 83851 123145553240064 'function' object has no attribute 'API_KEY'
+ERROR 2017-11-13 20:43:13,830 views 83851 123145553240064 'function' object has no attribute 'API_KEY'
+ERROR 2017-11-13 20:43:14,214 views 83851 123145553240064 'function' object has no attribute 'API_KEY'
+ERROR 2017-11-13 20:43:14,470 views 83851 123145553240064 'function' object has no attribute 'API_KEY'
+ERROR 2017-11-13 20:43:54,463 views 86305 123145493856256 'function' object has no attribute 'API_KEY'
+ERROR 2017-11-13 20:46:16,549 utils 88282 123145568874496 'shop'
+ERROR 2017-11-13 20:46:40,115 utils 88282 123145563619328 'shop'
+ERROR 2017-11-13 20:46:48,313 utils 88936 123145378230272 'shop'
+ERROR 2017-11-13 20:52:11,636 utils 94753 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 20:52:11,637 views 94753 140736254014400 parse_params() missing 1 required positional argument: 'request'
+ERROR 2017-11-13 20:52:11,639 views 94753 140736254014400 parse_params() missing 1 required positional argument: 'request'
+ERROR 2017-11-13 20:52:34,878 views 94426 123145488674816 parse_params() missing 1 required positional argument: 'request'
+ERROR 2017-11-13 20:52:43,556 views 94426 123145483419648 parse_params() missing 1 required positional argument: 'request'
+ERROR 2017-11-13 20:55:20,951 utils 97886 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 20:55:39,451 utils 98219 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 20:56:57,095 utils 142 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 20:58:35,993 utils 2180 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 21:00:10,337 utils 3823 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 21:00:13,589 utils 3987 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 21:02:27,914 utils 6123 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 21:02:27,914 views 6123 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:10:48,457 utils 77908 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:10:48,458 views 77908 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:11:29,475 utils 78567 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:11:29,475 views 78567 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:12:48,160 utils 80052 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:12:48,161 views 80052 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:13:21,232 utils 80548 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:13:21,232 views 80548 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:14:04,059 utils 81380 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:14:04,059 views 81380 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:14:22,122 utils 81717 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:14:22,123 views 81717 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:14:39,681 utils 82054 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:14:39,681 views 82054 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:15:22,615 utils 82896 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:15:22,615 views 82896 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:15:38,381 utils 83228 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:15:38,381 views 83228 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:17:10,174 utils 84703 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:17:10,174 views 84703 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:17:47,142 utils 85366 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:17:47,143 views 85366 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:18:24,289 utils 86026 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:18:24,289 views 86026 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:20:32,944 utils 88176 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:20:32,944 views 88176 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:22:07,484 utils 90137 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:22:07,484 views 90137 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:22:31,432 utils 90472 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:22:31,433 views 90472 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:24:16,434 utils 92267 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:24:16,434 views 92267 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:25:25,801 utils 93425 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:25:25,801 views 93425 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:25:39,759 utils 93595 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:25:39,760 views 93595 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:26:13,414 utils 94256 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:26:13,414 views 94256 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:26:42,766 utils 94758 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:26:42,766 views 94758 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:26:54,873 utils 94929 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:26:54,873 views 94929 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:27:29,076 utils 95430 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:27:29,077 views 95430 140736254014400 Failed to authenticate request
+ERROR 2017-11-13 22:29:39,673 utils 97606 140736254014400 Invalid HMAC: Possibly malicious login
+ERROR 2017-11-13 22:29:39,673 views 97606 140736254014400 Failed to authenticate request

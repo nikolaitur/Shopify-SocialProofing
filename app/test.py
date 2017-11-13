@@ -22,15 +22,6 @@ class AuthenticationTests(TestCase):
                                         'https://mystore.myshopify.com/admin/oauth/authorize'
                                         '?client_id=*&scope=*&redirect_uri=*'))
 
-    def test_check_security_validation_based_on_env(self):
-        with self.settings(DEVELOPMENT_MODE='PRODUCTION'):
-            response = self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
-            self.assertEqual(response.status_code, 400)
-
-        with self.settings(DEVELOPMENT_MODE='TEST'):
-            response = self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
-            self.assertEqual(response.status_code, 200)
-
 
 class DevelopmentToProductionDeploymentTest(TestCase):
     """
@@ -42,3 +33,43 @@ class DevelopmentToProductionDeploymentTest(TestCase):
         if settings.DEVELOPMENT_MODE == 'PRODUCTION':
             response = self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
             self.assertEqual(response.status_code, 400)
+
+
+class EntryPointTests(TestCase):
+    """
+    Tests app entry point redirects.
+    """
+    fixtures = ['entrypoint_fixture.json']
+
+    def setUp(self):
+        self.client = Client()
+
+    def test_unregistered_store(self):
+        # Store not registered app and not set up settings.
+        shop = 'foobarbaz'
+        response = self.client.get(
+            reverse('index') + '?hmac=123&locale=123&protocol=123&shop={}&timestamp=123'.format(shop))
+        self.assertRedirects(response, expected_url=reverse('install'), status_code=302, fetch_redirect_response=False)
+
+    def test_registered_store_and_not_setup(self):
+        # Store registered app but not set up settings.
+        shop = 'not-setup-store.myshopify.com'
+        response = self.client.get(
+            reverse('index') + '?hmac=123&locale=123&protocol=123&shop={}&timestamp=123'.format(shop))
+        self.assertRedirects(response, expected_url=reverse('wizard'), status_code=302, fetch_redirect_response=False)
+
+    def test_registered_and_setup(self):
+        # Store registered app but not set up settings.
+        shop = 'setup-store.myshopify.com'
+        response = self.client.get(
+            reverse('index') + '?hmac=123&locale=123&protocol=123&shop={}&timestamp=123'.format(shop))
+        self.assertRedirects(response, expected_url=reverse('dashboard'), status_code=302, fetch_redirect_response=False)
+
+    def test_check_security_validation_based_on_env(self):
+        with self.settings(DEVELOPMENT_MODE='PRODUCTION'):
+            response = self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
+            self.assertEqual(response.status_code, 400)
+
+        with self.settings(DEVELOPMENT_MODE='TEST'):
+            response = self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
+            self.assertIn(response.status_code, [200, 302])

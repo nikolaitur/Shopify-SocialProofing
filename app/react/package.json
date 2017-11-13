@@ -5,7 +5,7 @@
   "description": "A Polaris example application using Browserify",
   "main": "index.js",
   "scripts": {
-    "prebuild": "shx rm -rf build && shx mkdir build && shx cp src/index.html build",
+    "prebuild": "shx rm -rf build",
     "build": "browserify src/index.js -o ../static/app/bundle.js",
     "start": "yarn build && budo src/index.js:bundle.js --dir build --live --open"
   },

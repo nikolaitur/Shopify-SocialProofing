@@ -11,6 +11,7 @@ import {
   AccountConnection,
   ChoiceList,
   SettingToggle,
+  ColorPicker
 } from '@shopify/polaris';
 
 class App extends Component {
@@ -21,104 +22,139 @@ class App extends Component {
       last: '',
       email: '',
       checkboxes: [],
-      colorSelected: '',
       connected: false,
+      color: {    
+        hue: 83.28358208955224,
+        brightness: 0.48750000000000004,
+        saturation: 0.30625,
+        alpha: 1
+      },
+      size: '100,300',
+      socialSetting: 'latest',
+      socialTime: '1d'
     };
-    this.handleColor = this.handleColor.bind(this)
-    this.valueUpdater = this.valueUpdater.bind(this)
+    this.handleColor = this.handleColor.bind(this);
   }
-
+  
+  handleColor (color) {
+    this.setState({color})
+  }
+  
+  
   valueUpdater(field) {
     return (value) => this.setState({[field]: value});
   }
 
-  handleColor (color) {
-    this.setState({colorSelected: })
-  }
-
   render() {
-    const primaryAction = {content: 'New product'};
-
     return (
       <Page
-        title="Settings"
+        title="Setup"
       >
         <Layout>
           <Layout.AnnotatedSection
-            title="Style + Appearance"
-            description="Customize the appearance of the social proof modal"
+            title="Style"
+            description="Customize the size and appearance of the modal"
           >
-          <ColorPicker
-            color={{
-              hue: 120,
-              brightness: 1,
-              saturation: 1,
-            }}
-            alpha
-            onChange={this.handleColor}
-            />
+            <SettingToggle>
+              <ColorPicker
+                color={{
+                  hue: this.state.color.hue,
+                  brightness: this.state.color.brightness,
+                  saturation: this.state.color.saturation,
+                  alpha: this.state.color.alpha
+                }}
+                allowAlpha
+                onChange={this.handleColor}
+              />
+            Current Color: {JSON.stringify(this.state.color)}
+            </SettingToggle>
+            <SettingToggle>
+              <ChoiceList
+                title="Dimensions in pixels"
+                choices={[
+                  {
+                    label: '100x300',
+                    value: '100,300'
+                  },
+                  {
+                    label: '150x300',
+                    value: '150,300'
+                  },
+                  {
+                    label: '300x100',
+                    value: '300,100'
+                  },
+                ]}
+                selected={this.state.size}
+              />
+            </SettingToggle>
           </Layout.AnnotatedSection>
 
-         {this.renderAccount()}
-
           <Layout.AnnotatedSection
-            title="Form"
-            description="A sample form using Polaris components."
+            title="Social Proof Settings"
+            description="Display data as # of customers who have added this product, viewed the product,
+            or display the last customer who purchased it."
           >
             <Card sectioned>
               <FormLayout>
                 <FormLayout.Group>
-                  <TextField
-                    value={this.state.first}
-                    label="First Name"
-                    placeholder="Tom"
-                    onChange={this.valueUpdater('first')}
+                  <ChoiceList
+                    title="Social Proof Settings (Default: # of )"
+                    choices={[
+                      {
+                        label: '# of customers who have purchased this product',
+                        value: 'purchase'
+                      },
+                      {
+                        label: '# of customers who have viewed this product',
+                        value: 'view'
+                      },
+                      {
+                        label: 'Display latest customer who purchased this product',
+                        value: 'latest'
+                      }
+                    ]}
+                    selected={this.state.socialSetting}
                   />
-                  <TextField
-                    value={this.state.last}
-                    label="Last Name"
-                    placeholder="Ford"
-                    onChange={this.valueUpdater('last')}
+                  <ChoiceList
+                    title="Look Back Duration (Default 1 day)"
+                    choices={[
+                      {
+                        label: 'Last 6 hours',
+                        value: '6h'
+                      },
+                      {
+                        label: 'Last 12 hours',
+                        value: '12h'
+                      },
+                      {
+                        label: 'Last Day',
+                        value: '1d'
+                      },
+                      {
+                        label: 'Last 3 Days',
+                        value: '3d'
+                      },
+                      {
+                        label: 'Last 7 Days',
+                        value: '7d'
+                      },
+                    ]}
+                    selected={this.state.socialTime}
                   />
                 </FormLayout.Group>
-
-                <TextField
-                  value={this.state.email}
-                  label="Email"
-                  placeholder="example@email.com"
-                  onChange={this.valueUpdater('email')}
-                />
-
-                <TextField
-                  multiline
-                  label="How did you hear about us?"
-                  placeholder="Website, ads, email, etc."
-                  value={this.state.autoGrow}
-                  onChange={this.valueUpdater('autoGrow')}
-                />
-
-                <ChoiceList
-                  allowMultiple
-                  choices={choiceListItems}
-                  selected={this.state.checkboxes}
-                  onChange={this.valueUpdater('checkboxes')}
-                />
-
-                <Button primary>Submit</Button>
+                <Button primary>Submit & Save</Button>
               </FormLayout>
             </Card>
           </Layout.AnnotatedSection>
 
           <Layout.Section>
-            <FooterHelp>For more details on Polaris, visit our <Link url="https://polaris.shopify.com">styleguide</Link>.</FooterHelp>
+            <FooterHelp>For help visit <Link url="https://www.google.com/search?ei=jLUIWvK0JojimAHg-KY4&q=help&oq=help&gs_l=psy-ab.3..0i67k1l2j0j0i67k1j0j0i67k1j0l4.1185.1507.0.1749.4.4.0.0.0.0.194.194.0j1.1.0....0...1.1.64.psy-ab..3.1.194....0.HDVDjU-AKiQ">styleguide</Link>.</FooterHelp>
           </Layout.Section>
-
         </Layout>
       </Page>
     );
   }
-
-
 }
 
 export default App;
