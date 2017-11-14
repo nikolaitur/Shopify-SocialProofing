@@ -10,39 +10,10 @@ from django.template import loader
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from app.utils import authenticate, parse_params
+from app.decorators import shop_login_required
 from .models import Store, StoreSettings
 
 logger = logging.getLogger(__name__)
-
-
-@xframe_options_exempt
-def index(request):
-    """
-    This view is the entry point for our app in the store owner admin page.
-    Redirects store owner to correct view based on account status.
-    """
-
-    try:
-        session = authenticate(request)
-        params = parse_params(request)
-        store_name = params['shop']
-
-        exists_in_store_settings_table = StoreSettings.objects.filter(store__store_name=store_name).exists()
-        exists_in_store_table = Store.objects.filter(store_name=store_name).exists()
-
-        if exists_in_store_table and not exists_in_store_settings_table:
-            # Registered app but did not setup store settings yet
-            return HttpResponseRedirect(reverse('wizard'))
-        elif exists_in_store_table and exists_in_store_settings_table:
-            # Registered app and set up store
-            return HttpResponseRedirect(reverse('dashboard'))
-        else:
-            # Redirect to install page
-            return HttpResponseRedirect(reverse('install'))
-
-    except Exception as e:
-        logger.error(e)
-        return HttpResponseBadRequest(e)
 
 
 def install(request):
@@ -73,7 +44,11 @@ def auth_callback(request):
         session = authenticate(request)
         params = parse_params(request)
         token = session.request_token(params)
-        print('Received permanent token: {}'.format(token))
+        logger.info('Received permanent token: {} from {}'.format(token, params['shop']))
+
+        request.session['shopify'] = {
+            "shop_url": params['shop']
+        }
 
         # Store permanent token or update if exists in db
         store, created = Store.objects.update_or_create(store_name=params['shop'], defaults={'permanent_token': token})
@@ -86,6 +61,42 @@ def auth_callback(request):
 
 
 @xframe_options_exempt
+def index(request):
+    """
+    This view is the entry point for our app in the store owner admin page.
+    Redirects store owner to correct view based on account status.
+    """
+
+    try:
+        session = authenticate(request)
+        params = parse_params(request)
+
+        request.session['shopify'] = {
+            "shop_url": params['shop']
+        }
+
+        store_name = params['shop']
+
+        exists_in_store_settings_table = StoreSettings.objects.filter(store__store_name=store_name).exists()
+        exists_in_store_table = Store.objects.filter(store_name=store_name).exists()
+
+        if exists_in_store_table and not exists_in_store_settings_table:
+            # Registered app but did not setup store settings yet
+            return HttpResponseRedirect(reverse('wizard'))
+        elif exists_in_store_table and exists_in_store_settings_table:
+            # Registered app and set up store
+            return HttpResponseRedirect(reverse('dashboard'))
+        else:
+            # Redirect to install page
+            return HttpResponseRedirect(reverse('install'))
+
+    except Exception as e:
+        logger.error(e)
+        return HttpResponseBadRequest(e)
+
+
+@xframe_options_exempt
+@shop_login_required
 def wizard(request):
     """
     Setup wizard.
@@ -95,6 +106,7 @@ def wizard(request):
 
 
 @xframe_options_exempt
+@shop_login_required
 def store_settings(request):
     """
     App settings.
@@ -104,6 +116,7 @@ def store_settings(request):
 
 
 @xframe_options_exempt
+@shop_login_required
 def dashboard(request):
     """
     Analytics dashboard.

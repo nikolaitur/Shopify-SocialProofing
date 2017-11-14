@@ -63,7 +63,8 @@ class EntryPointTests(TestCase):
         shop = 'setup-store.myshopify.com'
         response = self.client.get(
             reverse('index') + '?hmac=123&locale=123&protocol=123&shop={}&timestamp=123'.format(shop))
-        self.assertRedirects(response, expected_url=reverse('dashboard'), status_code=302, fetch_redirect_response=False)
+        self.assertRedirects(response, expected_url=reverse('dashboard'), status_code=302,
+                             fetch_redirect_response=False)
 
     def test_check_security_validation_based_on_env(self):
         with self.settings(DEVELOPMENT_MODE='PRODUCTION'):
@@ -73,3 +74,65 @@ class EntryPointTests(TestCase):
         with self.settings(DEVELOPMENT_MODE='TEST'):
             response = self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
             self.assertIn(response.status_code, [200, 302])
+
+
+class SessionTests(TestCase):
+    """
+    Test views security based on session.
+    """
+
+    def setUp(self):
+        self.client = Client()
+
+    def test_session_is_saved_based_on_env(self):
+        with self.settings(DEVELOPMENT_MODE='TEST'):
+            self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
+            session = self.client.session
+            self.assertEqual(session['shopify'], {'shop_url': '123'})
+
+            # Reset self.client
+            self.client = Client()
+
+        with self.settings(DEVELOPMENT_MODE='PRODUCTION'):
+            self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
+            session = self.client.session
+            self.assertEqual(session.get('shopify', None), None)
+
+            # Reset self.client
+            self.client = Client()
+
+    def test_views_based_on_session(self):
+        with self.settings(DEVELOPMENT_MODE='TEST'):
+            self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
+            session = self.client.session
+
+            response = self.client.get(reverse('wizard'))
+            self.assertEqual(response.status_code, 200)
+
+            response = self.client.get(reverse('store_settings'))
+            self.assertEqual(response.status_code, 200)
+
+            response = self.client.get(reverse('dashboard'))
+            self.assertEqual(response.status_code, 200)
+
+            # Reset self.client
+            self.client = Client()
+
+        with self.settings(DEVELOPMENT_MODE='PRODUCTION'):
+            self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
+            session = self.client.session
+
+            response = self.client.get(reverse('wizard'))
+            self.assertRedirects(response, expected_url=reverse('install'), status_code=302,
+                                 fetch_redirect_response=False)
+
+            response = self.client.get(reverse('store_settings'))
+            self.assertRedirects(response, expected_url=reverse('install'), status_code=302,
+                                 fetch_redirect_response=False)
+
+            response = self.client.get(reverse('dashboard'))
+            self.assertRedirects(response, expected_url=reverse('install'), status_code=302,
+                                 fetch_redirect_response=False)
+
+            # Reset self.client
+            self.client = Client()

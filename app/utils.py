@@ -11,7 +11,7 @@ def authenticate(request):
     Authenticates user requests to the app.
 
     :param request: Django Request Object
-    :return:        Shopify session and extracted parameters
+    :return:        Shopify session with shop name.
     """
     shopify.Session.setup(api_key=settings.API_KEY, secret=settings.API_SECRET)
 
@@ -30,7 +30,7 @@ def authenticate(request):
 
 def parse_params(request):
     """
-    Parse GET parameters.
+    Parse authentication GET parameters.
     """
     try:
         if request.method == 'GET':
