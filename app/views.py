@@ -4,14 +4,17 @@ from urllib.parse import urlparse
 import shopify
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect
 from django.template import loader
 from django.views.decorators.clickjacking import xframe_options_exempt
 
-from app.utils import authenticate, parse_params
-from app.decorators import shop_login_required
-from .models import Store, StoreSettings
+from .utils import authenticate, parse_params, populate_default_settings
+from .decorators import shop_login_required, api_authentication
+from .models import Store, StoreSettings, Modal, ModalTextSettings
+from django.core import serializers
+from itertools import chain
+from django.views.decorators.csrf import csrf_exempt
 
 logger = logging.getLogger(__name__)
 
@@ -76,33 +79,25 @@ def index(request):
         }
 
         store_name = params['shop']
+        print(store_name)
 
         exists_in_store_settings_table = StoreSettings.objects.filter(store__store_name=store_name).exists()
         exists_in_store_table = Store.objects.filter(store_name=store_name).exists()
 
+        # User not set up yet, i.e. just registered
         if exists_in_store_table and not exists_in_store_settings_table:
-            # Registered app but did not setup store settings yet
-            return HttpResponseRedirect(reverse('wizard'))
-        elif exists_in_store_table and exists_in_store_settings_table:
-            # Registered app and set up store
+            populate_default_settings(store_name)
+            return HttpResponseRedirect(reverse('store_settings'))
+
+        # Store has been set up
+        if exists_in_store_table and exists_in_store_settings_table:
             return HttpResponseRedirect(reverse('dashboard'))
-        else:
-            # Redirect to install page
-            return HttpResponseRedirect(reverse('install'))
+
+        return HttpResponseRedirect(reverse('install'))
 
     except Exception as e:
         logger.error(e)
         return HttpResponseBadRequest(e)
-
-
-@xframe_options_exempt
-@shop_login_required
-def wizard(request):
-    """
-    Setup wizard.
-    """
-    params = parse_params(request)
-    return HttpResponse('setup wizard.')
 
 
 @xframe_options_exempt
@@ -135,3 +130,55 @@ def dashboard(request):
     except Exception as e:
         logger.error(e)
         return HttpResponseBadRequest(e)
+
+
+@xframe_options_exempt
+@shop_login_required
+@api_authentication
+def store_settings_api(request, store_name):
+    """
+    Retrieve, update or delete store settings.
+    """
+
+    if request.method == 'GET':
+        qs1 = Store.objects.filter(store_name=store_name)
+        qs2 = StoreSettings.objects.filter(store__store_name=store_name)
+        qs3 = Modal.objects.filter(store__store_name=store_name)
+
+        merge = chain(qs1, qs2, qs3)
+
+        qs_json = serializers.serialize('json', merge)
+        return HttpResponse(qs_json, content_type='application/json')
+
+    elif request.method == 'POST':
+        params = {
+            'look_back': request.POST.get('look_back', ''),
+            'modal_text_settings': request.POST.get('modal_text_settings', ''),
+            'location': request.POST.get('location', ''),
+            'color': request.POST.get('color', ''),
+            'duration': request.POST.get('duration', ''),
+        }
+
+        if any(y == '' for _, y in params.items()):  # All parameters must be provided
+            logger.error('Bad request. Not all settings parameters provided.')
+            return HttpResponseBadRequest('Bad request. Not all settings parameters provided.')
+
+        # Update StoreSettings model
+        obj = StoreSettings.objects.get(store__store_name=store_name)
+
+        obj.look_back = params['look_back']
+        obj.save()
+
+        # Update Modal model
+        obj = Modal.objects.get(store__store_name=store_name)
+        modal_text_settings = ModalTextSettings.objects.get(modal_text_id=params['modal_text_settings'])
+
+        obj.modal_text_settings = modal_text_settings  # Needs to be ModalTextSettings instance
+        obj.location = params['location']
+        obj.color = params['color']
+        obj.duration = params['duration']
+        obj.save()
+
+        return HttpResponse('Success', status=200)
+
+    return HttpResponseBadRequest(status=400)

@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from http.cookies import SimpleCookie
 
 import fnmatch
 
@@ -34,6 +35,9 @@ class DevelopmentToProductionDeploymentTest(TestCase):
             response = self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
             self.assertEqual(response.status_code, 400)
 
+    def test_update(self):
+        pass
+
 
 class EntryPointTests(TestCase):
     """
@@ -47,16 +51,21 @@ class EntryPointTests(TestCase):
     def test_unregistered_store(self):
         # Store not registered app and not set up settings.
         shop = 'foobarbaz'
-        response = self.client.get(
-            reverse('index') + '?hmac=123&locale=123&protocol=123&shop={}&timestamp=123'.format(shop))
+
+        with self.settings(DEVELOPMENT_MODE='TEST'):
+            response = self.client.get(
+                reverse('index') + '?hmac=123&locale=123&protocol=123&shop={}&timestamp=123'.format(shop))
         self.assertRedirects(response, expected_url=reverse('install'), status_code=302, fetch_redirect_response=False)
 
     def test_registered_store_and_not_setup(self):
         # Store registered app but not set up settings.
         shop = 'not-setup-store.myshopify.com'
-        response = self.client.get(
-            reverse('index') + '?hmac=123&locale=123&protocol=123&shop={}&timestamp=123'.format(shop))
-        self.assertRedirects(response, expected_url=reverse('wizard'), status_code=302, fetch_redirect_response=False)
+
+        with self.settings(DEVELOPMENT_MODE='TEST'):
+            response = self.client.get(
+                reverse('index') + '?hmac=123&locale=123&protocol=123&shop={}&timestamp=123'.format(shop))
+        self.assertRedirects(response, expected_url=reverse('store_settings'), status_code=302,
+                             fetch_redirect_response=False)
 
     def test_registered_and_setup(self):
         # Store registered app but not set up settings.
@@ -106,9 +115,6 @@ class SessionTests(TestCase):
             self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
             session = self.client.session
 
-            response = self.client.get(reverse('wizard'))
-            self.assertEqual(response.status_code, 200)
-
             response = self.client.get(reverse('store_settings'))
             self.assertEqual(response.status_code, 200)
 
@@ -122,10 +128,6 @@ class SessionTests(TestCase):
             self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
             session = self.client.session
 
-            response = self.client.get(reverse('wizard'))
-            self.assertRedirects(response, expected_url=reverse('install'), status_code=302,
-                                 fetch_redirect_response=False)
-
             response = self.client.get(reverse('store_settings'))
             self.assertRedirects(response, expected_url=reverse('install'), status_code=302,
                                  fetch_redirect_response=False)
@@ -136,3 +138,64 @@ class SessionTests(TestCase):
 
             # Reset self.client
             self.client = Client()
+
+
+class TestStoreSettingsAPI(TestCase):
+    """
+    Test Store Settings API View.
+    """
+
+    fixtures = ['entrypoint_fixture.json']
+
+    def setUp(self):
+        self.client = Client()
+
+    def test_get_valid_request(self):
+        with self.settings(DEVELOPMENT_MODE='TEST'):
+            response = self.client.get(
+                reverse('store_settings_api', kwargs={'store_name': 'not-setup-store.myshopify.com'}))
+            self.assertEqual(response.status_code, 200)
+
+        with self.settings(DEVELOPMENT_MODE='PRODUCTION'):
+            # No cookies
+            response = self.client.get(
+                reverse('store_settings_api', kwargs={'store_name': 'not-setup-store.myshopify.com'}))
+            self.assertEqual(response.status_code, 302)
+
+            # TODO: Add unit test with cookies
+
+    def test_post_valid_request(self):
+        with self.settings(DEVELOPMENT_MODE='TEST'):
+            response = self.client.post(
+                reverse('store_settings_api', kwargs={'store_name': 'setup-store.myshopify.com'}),
+                {'look_back': '300',
+                 'modal_text_settings': '1',
+                 'location': 'top-left',
+                 'color': '#FFFFF',
+                 'duration': '5'},
+            )
+            self.assertEqual(response.status_code, 200)
+
+    def test_post_invalid_request_missing_parameter(self):
+        with self.settings(DEVELOPMENT_MODE='TEST'):
+            response = self.client.post(
+                reverse('store_settings_api', kwargs={'store_name': 'setup-store.myshopify.com'}),
+                {'look_back': '300',
+                 'modal_text_settings': '1',
+                 'TYPO_location': 'top-left',
+                 'color': '#FFFFF',
+                 'duration': '5'},
+            )
+            self.assertEqual(response.status_code, 400)
+
+    def test_post_invalid_request_nonexistent_modal_text_settings(self):
+        with self.settings(DEVELOPMENT_MODE='TEST'):
+            response = self.client.post(
+                reverse('store_settings_api', kwargs={'store_name': 'setup-store.myshopify.com'}),
+                {'look_back': '300',
+                 'modal_text_settings': '999',
+                 'TYPO_location': 'top-left',
+                 'color': '#FFFFF',
+                 'duration': '5'},
+            )
+            self.assertEqual(response.status_code, 400)

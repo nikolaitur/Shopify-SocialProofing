@@ -21,8 +21,8 @@ from . import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^install/?$', views.install, name='install'),
-    url(r'^wizard/?$', views.wizard, name='wizard'),
     url(r'^store_settings/?$', views.store_settings, name='store_settings'),
     url(r'^dashboard/?$', views.dashboard, name='dashboard'),
     url(r'^auth/callback/?$', views.auth_callback, name='auth_callback'),
+    url(r'^api/store_settings/(?P<store_name>[a-zA-Z0-9_.-]*)/?$', views.store_settings_api, name='store_settings_api'),
 ]
