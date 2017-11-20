@@ -79,21 +79,17 @@ def index(request):
         }
 
         store_name = params['shop']
-        print(store_name)
 
         exists_in_store_settings_table = StoreSettings.objects.filter(store__store_name=store_name).exists()
         exists_in_store_table = Store.objects.filter(store_name=store_name).exists()
 
-        # User not set up yet, i.e. just registered
+        if not exists_in_store_table and not exists_in_store_settings_table:
+            return HttpResponseRedirect(reverse('install'))
+
         if exists_in_store_table and not exists_in_store_settings_table:
-            populate_default_settings(store_name)
-            return HttpResponseRedirect(reverse('store_settings'))
+            populate_default_settings(store_name)  # Populate store settings with defaults in db
 
-        # Store has been set up
-        if exists_in_store_table and exists_in_store_settings_table:
-            return HttpResponseRedirect(reverse('dashboard'))
-
-        return HttpResponseRedirect(reverse('install'))
+        return HttpResponseRedirect(reverse('store_settings'))
 
     except Exception as e:
         logger.error(e)
