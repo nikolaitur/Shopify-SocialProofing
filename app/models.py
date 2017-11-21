@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.core.validators import MaxValueValidator
+from datetime import datetime
 
 
 class Store(models.Model):
@@ -36,6 +37,11 @@ class Orders(models.Model):
 
     order_id = models.CharField(max_length=200)
     qty = models.IntegerField(validators=[MaxValueValidator(250), ])
+    processed_at = models.DateTimeField(null=True, blank=True)
+
+    def was_published_recently(self):
+        now = timezone.now()
+        return now - datetime.timedelta(days=1) <= self.pub_date <= now
 
     class Meta:
         unique_together = (('store', 'product', 'order_id'),)

@@ -9,6 +9,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
 django.setup()
 
 from app.models import Store, Product, Orders
+from dateutil.parser import parse
 
 # Overrides the default function for context creation with the function to create an unverified context.
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -33,6 +34,8 @@ def ingest_orders(stores_obj):
 
     for order in orders:
         order_id = order.id
+        processed_at = parse(order.processed_at)
+
         for line_item in order.line_items:
             qty = line_item.quantity
             product_id = line_item.product_id
@@ -43,7 +46,8 @@ def ingest_orders(stores_obj):
             product = Product.objects.get(product_id=product_id)
             Orders.objects.update_or_create(order_id=order_id, store__store_name=stores_obj['store_name'],
                                             product=product,
-                                            defaults={'product': product, 'store': store, 'qty': qty})
+                                            defaults={'product': product, 'store': store, 'qty': qty,
+                                                      'processed_at': processed_at})
 
 
 def ingest_products(stores_obj):
