@@ -105,8 +105,9 @@ def store_settings(request):
     """
     App settings.
     """
+    template = loader.get_template('app/index.html')
     params = parse_params(request)
-    return HttpResponse('Settings page.')
+    return HttpResponse(template.render())
 
 
 @xframe_options_exempt
