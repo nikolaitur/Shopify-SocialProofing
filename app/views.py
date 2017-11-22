@@ -56,7 +56,8 @@ def auth_callback(request):
         }
 
         # Store permanent token or update if exists in db
-        store, created = Store.objects.update_or_create(store_name=params['shop'], defaults={'permanent_token': token})
+        store, created = Store.objects.update_or_create(store_name=params['shop'],
+                                                        defaults={'permanent_token': token, 'active': True})
 
         # Return the user back to their shop
         return redirect('https://' + params['shop'])

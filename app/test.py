@@ -35,8 +35,9 @@ class DevelopmentToProductionDeploymentTest(TestCase):
             response = self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
             self.assertEqual(response.status_code, 400)
 
-    def test_update(self):
-        pass
+    def test_debug_is_off(self):
+        if settings.DEVELOPMENT_MODE == 'PRODUCTION':
+            self.assertTrue(settings.DEBUG, False)
 
 
 class EntryPointTests(TestCase):
