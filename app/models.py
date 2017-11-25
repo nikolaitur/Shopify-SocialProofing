@@ -38,6 +38,11 @@ class Orders(models.Model):
     order_id = models.CharField(max_length=200)
     qty = models.IntegerField(validators=[MaxValueValidator(250), ])
     processed_at = models.DateTimeField(null=True, blank=True)
+    first_name = models.TextField(default='')
+    last_name = models.TextField(default='')
+
+    province_code = models.TextField(default='')
+    country_code = models.TextField(default='')
 
     class Meta:
         unique_together = (('store', 'product', 'order_id'),)
@@ -57,14 +62,3 @@ class Modal(models.Model):
 
     class Meta:
         unique_together = (('store', 'modal_text_settings'),)
-
-
-class ProductViews(models.Model):
-    store = models.ForeignKey(Store, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    view_count = models.IntegerField()
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-
-    class Meta:
-        unique_together = (('store', 'product'),)

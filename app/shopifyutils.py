@@ -33,6 +33,22 @@ def ingest_orders(stores_obj):
     orders = shopify.Order.find()
 
     for order in orders:
+        customer = order.attributes.get('customer', None)
+        shipping_address = order.attributes.get('shipping_address', None)
+
+        first_name = ''
+        last_name = ''
+        province_code = ''
+        country_code = ''
+
+        if customer:
+            first_name = customer.attributes['first_name']
+            last_name = customer.attributes['last_name']
+
+        if shipping_address:
+            province_code = shipping_address.attributes['province_code']
+            country_code = shipping_address.attributes['country_code']
+
         order_id = order.id
         processed_at = parse(order.processed_at)
 
@@ -46,8 +62,14 @@ def ingest_orders(stores_obj):
             product = Product.objects.get(product_id=product_id)
             Orders.objects.update_or_create(order_id=order_id, store__store_name=stores_obj['store_name'],
                                             product=product,
-                                            defaults={'product': product, 'store': store, 'qty': qty,
-                                                      'processed_at': processed_at})
+                                            defaults={'product': product,
+                                                      'store': store,
+                                                      'qty': qty,
+                                                      'processed_at': processed_at,
+                                                      'first_name': first_name,
+                                                      'last_name': last_name,
+                                                      'province_code': province_code,
+                                                      'country_code': country_code, })
 
 
 def ingest_products(stores_obj):

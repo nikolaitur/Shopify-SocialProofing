@@ -10,8 +10,11 @@ django.setup()
 from app.models import ModalTextSettings
 
 prompts = [
-    '%s customers have bought this item in the last %s days.',
-    '%s customers have viewed this item in the last %s days.',
+    'Dummy value',
+    'Dummy value',
+    'Dummy value',
+    'Dummy value',
+    'Dummy value',
 ]
 
 for x, prompt in enumerate(prompts):

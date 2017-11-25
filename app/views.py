@@ -214,24 +214,31 @@ def products_api(request, store_name):
     return HttpResponseBadRequest('Invalid request')
 
 
-@xframe_options_exempt
-@shop_login_required
-@api_authentication
-def modal_transformer_api(request, store_name, product_id):
+def modal_api(request, store_name, product_id):
     """
-    Return metric set by user (page view, sold count) for given product and store name.
+    Public modal api. Returns a json string with relevant modal information.
     """
     if request.method == 'GET':
-        # Returned products should be within store's look_back parameter
-        look_back = StoreSettings.objects.filter(store__store_name=store_name).values('look_back')[0]['look_back']
-        time_threshold = timezone.now() - timedelta(seconds=look_back * 60)
+        try:
 
-        qs1 = Orders.objects \
-            .filter(store__store_name=store_name) \
-            .filter(product__product_id=product_id) \
-            .filter(processed_at__lt=time_threshold)
+            # Returned products should be within store's look_back parameter
+            look_back = StoreSettings.objects.filter(store__store_name=store_name).values('look_back')[0]['look_back']
+            time_threshold = timezone.now() - timedelta(seconds=look_back * 60)
 
-        qs_json = serializers.serialize('json', qs1)
-        return HttpResponse(qs_json, content_type='application/json')
+            qs1 = Orders.objects \
+                .filter(store__store_name=store_name) \
+                .filter(product__product_id=product_id) \
+                .filter(processed_at__lt=time_threshold)
+
+            qs2 = StoreSettings.objects.filter(store__store_name=store_name)
+            qs3 = Modal.objects.filter(store__store_name=store_name)
+
+            qs = chain(qs1, qs2, qs3)
+
+            qs_json = serializers.serialize('json', qs)
+            return HttpResponse(qs_json, content_type='application/json')
+        except Exception as e:
+            logger.error(e)
+            return HttpResponseBadRequest('Something went wrong.')
 
     return HttpResponseBadRequest('Invalid request')
