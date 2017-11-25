@@ -8,10 +8,11 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedire
 from django.shortcuts import redirect
 from django.template import loader
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.db.models import Sum
 
 from .utils import authenticate, parse_params, populate_default_settings
 from .decorators import shop_login_required, api_authentication
-from .models import Store, StoreSettings, Modal, ModalTextSettings, Orders, Product
+from .models import Store, StoreSettings, Modal, Orders, Product
 from django.core import serializers
 from itertools import chain
 from django.utils import timezone
@@ -153,7 +154,6 @@ def store_settings_api(request, store_name):
     elif request.method == 'POST':
         params = {
             'look_back': request.POST.get('look_back', ''),
-            'modal_text_settings': request.POST.get('modal_text_settings', ''),
             'location': request.POST.get('location', ''),
             'color': request.POST.get('color', ''),
             'duration': request.POST.get('duration', ''),
@@ -169,11 +169,6 @@ def store_settings_api(request, store_name):
         obj.look_back = params['look_back']
         obj.save()
 
-        # Update Modal model
-        obj = Modal.objects.get(store__store_name=store_name)
-        modal_text_settings = ModalTextSettings.objects.get(modal_text_id=params['modal_text_settings'])
-
-        obj.modal_text_settings = modal_text_settings  # Needs to be ModalTextSettings instance
         obj.location = params['location']
         obj.color = params['color']
         obj.duration = params['duration']
@@ -223,20 +218,33 @@ def modal_api(request, store_name, product_id):
 
             # Returned products should be within store's look_back parameter
             look_back = StoreSettings.objects.filter(store__store_name=store_name).values('look_back')[0]['look_back']
-            time_threshold = timezone.now() - timedelta(seconds=look_back * 60)
+            time_threshold = timezone.now() - timedelta(seconds=look_back * 60 * 60 * 60)
 
-            qs1 = Orders.objects \
+            order_obj = Orders.objects \
                 .filter(store__store_name=store_name) \
                 .filter(product__product_id=product_id) \
-                .filter(processed_at__lt=time_threshold)
+                .filter(processed_at__range=[time_threshold, timezone.now()])
+            order_obj_first = order_obj.first()
+            modal_obj = Modal.objects.filter(store__store_name=store_name).first()
 
-            qs2 = StoreSettings.objects.filter(store__store_name=store_name)
-            qs3 = Modal.objects.filter(store__store_name=store_name)
+            response_dict = dict()
+            response_dict['store_name'] = store_name
+            response_dict['product_id'] = product_id
 
-            qs = chain(qs1, qs2, qs3)
+            response_dict['social_setting'] = modal_obj.social_setting
+            response_dict['color_brightness'] = modal_obj.color_brightness
+            response_dict['color_hue'] = modal_obj.color_hue
+            response_dict['color_saturation'] = modal_obj.color_saturation
 
-            qs_json = serializers.serialize('json', qs)
-            return HttpResponse(qs_json, content_type='application/json')
+            response_dict['first_name'] = order_obj_first.first_name if hasattr(order_obj_first, 'first_name') else None
+            response_dict['last_name'] = order_obj_first.last_name if hasattr(order_obj_first, 'last_name') else None
+            response_dict['province_code'] = order_obj_first.province_code if hasattr(order_obj_first, 'province_code') else None
+            response_dict['country_code'] = order_obj_first.country_code if hasattr(order_obj_first, 'country_code') else None
+            response_dict['last_order_qty'] = order_obj_first.qty if hasattr(order_obj_first, 'qty') else None
+            response_dict['processed_at'] = order_obj_first.processed_at if hasattr(order_obj_first, 'processed_at') else None
+            response_dict['qty_from_look_back'] = order_obj.aggregate(Sum('qty'))['qty__sum']
+
+            return JsonResponse(response_dict, safe=False)
         except Exception as e:
             logger.error(e)
             return HttpResponseBadRequest('Something went wrong.')

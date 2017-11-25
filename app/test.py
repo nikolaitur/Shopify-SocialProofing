@@ -173,8 +173,7 @@ class TestStoreSettingsAPI(TestCase):
         with self.settings(DEVELOPMENT_MODE='TEST'):
             response = self.client.post(
                 reverse('store_settings_api', kwargs={'store_name': 'setup-store.myshopify.com'}),
-                {'look_back': '300',
-                 'modal_text_settings': '1',
+                {'look_back': '24',
                  'location': 'top-left',
                  'color': '#FFFFF',
                  'duration': '5'},
@@ -185,22 +184,10 @@ class TestStoreSettingsAPI(TestCase):
         with self.settings(DEVELOPMENT_MODE='TEST'):
             response = self.client.post(
                 reverse('store_settings_api', kwargs={'store_name': 'setup-store.myshopify.com'}),
-                {'look_back': '300',
-                 'modal_text_settings': '1',
+                {'look_back': '24',
                  'TYPO_location': 'top-left',
                  'color': '#FFFFF',
                  'duration': '5'},
             )
             self.assertEqual(response.status_code, 400)
 
-    def test_post_invalid_request_nonexistent_modal_text_settings(self):
-        with self.settings(DEVELOPMENT_MODE='TEST'):
-            response = self.client.post(
-                reverse('store_settings_api', kwargs={'store_name': 'setup-store.myshopify.com'}),
-                {'look_back': '300',
-                 'modal_text_settings': '999',
-                 'TYPO_location': 'top-left',
-                 'color': '#FFFFF',
-                 'duration': '5'},
-            )
-            self.assertEqual(response.status_code, 400)

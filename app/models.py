@@ -17,8 +17,8 @@ class Store(models.Model):
 class StoreSettings(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
 
-    # Look back in minutes. 24 hours by default. Max 31 Days
-    look_back = models.PositiveIntegerField(default=1440, validators=[MaxValueValidator(44640), ])
+    # Look back in hours. 24 hours by default. Max 31 Days
+    look_back = models.PositiveIntegerField(default=24, validators=[MaxValueValidator(744), ])
 
 
 class Product(models.Model):
@@ -40,7 +40,6 @@ class Orders(models.Model):
     processed_at = models.DateTimeField(null=True, blank=True)
     first_name = models.TextField(default='')
     last_name = models.TextField(default='')
-
     province_code = models.TextField(default='')
     country_code = models.TextField(default='')
 
@@ -48,17 +47,12 @@ class Orders(models.Model):
         unique_together = (('store', 'product', 'order_id'),)
 
 
-class ModalTextSettings(models.Model):
-    modal_text_id = models.CharField(max_length=200, unique=True)
-    modal_text_field = models.TextField()
-
-
 class Modal(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
-    modal_text_settings = models.ForeignKey(ModalTextSettings, on_delete=models.CASCADE)
-    location = models.CharField(max_length=200)
-    color = models.CharField(max_length=200)
-    duration = models.IntegerField()
 
-    class Meta:
-        unique_together = (('store', 'modal_text_settings'),)
+    location = models.CharField(max_length=200, default='bottom-right')
+    color_hue = models.FloatField(default=83.28)
+    color_saturation = models.FloatField(default=0.306)
+    color_brightness = models.FloatField(default=0.487)
+    social_setting = models.TextField(default='latest')
+    size = models.TextField(default='250,100')  # Modal size (wxh)

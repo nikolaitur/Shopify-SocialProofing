@@ -2,7 +2,7 @@ import shopify
 import logging
 
 from django.conf import settings
-from .models import StoreSettings, Store, Modal, ModalTextSettings
+from .models import StoreSettings, Store, Modal
 
 logger = logging.getLogger(__name__)
 
@@ -65,24 +65,10 @@ def populate_default_settings(store_name):
     Populate db with default settings
     """
 
-    default_look_back = 1440        # Look back in seconds
-    default_modal_text_id = 0       # Modal text id in database
-    default_duration = 5            # Modal popup duration
-    default_location = 'top-right'  # Default modal location
-    default_color = '#4286f4'       # Default modal color
-
-    default_modal_text_settings = ModalTextSettings.objects.get(modal_text_id=default_modal_text_id)
-
     try:
         store = Store.objects.get(store_name=store_name)
     except Store.DoesNotExists:
         store = store.objects.create(store_name=store_name)
 
-    StoreSettings.objects.create(look_back=default_look_back, store=store)
-
-    Modal.objects.create(store=store,
-                         modal_text_settings=default_modal_text_settings,
-                         location=default_location,
-                         color=default_color,
-                         duration=default_duration,
-                         )
+    StoreSettings.objects.create(store=store)
+    Modal.objects.create(store=store)
