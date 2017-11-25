@@ -165,7 +165,7 @@ class Settings extends Component {
                         value: '3d'
                       },
                       {
-                        label: 'Last 7 Days Yolo',
+                        label: 'Last 7 Days',
                         value: '7d'
                       },
                     ]}
