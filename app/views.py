@@ -218,7 +218,7 @@ def modal_api(request, store_name, product_id):
 
             # Returned products should be within store's look_back parameter
             look_back = StoreSettings.objects.filter(store__store_name=store_name).values('look_back')[0]['look_back']
-            time_threshold = timezone.now() - timedelta(seconds=look_back * 60 * 60 * 60)
+            time_threshold = timezone.now() - timedelta(seconds=look_back * 60 * 60)
 
             order_obj = Orders.objects \
                 .filter(store__store_name=store_name) \
