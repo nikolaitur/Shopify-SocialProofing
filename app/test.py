@@ -179,15 +179,3 @@ class TestStoreSettingsAPI(TestCase):
                  'duration': '5'},
             )
             self.assertEqual(response.status_code, 200)
-
-    def test_post_invalid_request_missing_parameter(self):
-        with self.settings(DEVELOPMENT_MODE='TEST'):
-            response = self.client.post(
-                reverse('store_settings_api', kwargs={'store_name': 'setup-store.myshopify.com'}),
-                {'look_back': '24',
-                 'TYPO_location': 'top-left',
-                 'color': '#FFFFF',
-                 'duration': '5'},
-            )
-            self.assertEqual(response.status_code, 400)
-

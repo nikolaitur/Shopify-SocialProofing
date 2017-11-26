@@ -142,37 +142,43 @@ def store_settings_api(request, store_name):
     """
 
     if request.method == 'GET':
-        qs1 = Store.objects.filter(store_name=store_name)
-        qs2 = StoreSettings.objects.filter(store__store_name=store_name)
-        qs3 = Modal.objects.filter(store__store_name=store_name)
+        try:
+            modal_obj = Modal.objects.filter(store__store_name=store_name).first()
+            store_obj = Store.objects.filter(store_name=store_name).first()
+            store_settings_obj = StoreSettings.objects.filter(store__store_name=store_name).first()
 
-        merge = chain(qs1, qs2, qs3)
+            response_dict = dict()
+            response_dict['store_name'] = store_name
+            response_dict['look_back'] = store_settings_obj.look_back
 
-        qs_json = serializers.serialize('json', merge)
-        return HttpResponse(qs_json, content_type='application/json')
+            response_dict['active'] = store_obj.active
+
+            response_dict['social_setting'] = modal_obj.social_setting
+            response_dict['color_brightness'] = modal_obj.color_brightness
+            response_dict['color_hue'] = modal_obj.color_hue
+            response_dict['color_saturation'] = modal_obj.color_saturation
+            response_dict['size'] = modal_obj.size
+            response_dict['location'] = modal_obj.location
+
+            return JsonResponse(response_dict, safe=False)
+
+        except Exception as e:
+            logger.error(e)
+            return HttpResponseBadRequest(e)
 
     elif request.method == 'POST':
-        params = {
-            'look_back': request.POST.get('look_back', ''),
-            'location': request.POST.get('location', ''),
-            'color': request.POST.get('color', ''),
-            'duration': request.POST.get('duration', ''),
-        }
+        post_params = dict(request.POST.lists())
 
-        if any(y == '' for _, y in params.items()):  # All parameters must be provided
-            logger.error('Bad request. Not all settings parameters provided.')
-            return HttpResponseBadRequest('Bad request. Not all settings parameters provided.')
+        store_settings_obj = StoreSettings.objects.get(store__store_name=store_name)
+        modal_obj = Modal.objects.get(store__store_name=store_name)
 
-        # Update StoreSettings model
-        obj = StoreSettings.objects.get(store__store_name=store_name)
-
-        obj.look_back = params['look_back']
-        obj.save()
-
-        obj.location = params['location']
-        obj.color = params['color']
-        obj.duration = params['duration']
-        obj.save()
+        for key, value in post_params.items():
+            if hasattr(store_settings_obj, key):
+                setattr(store_settings_obj, key, value[0])
+                store_settings_obj.save()
+            if hasattr(modal_obj, key):
+                setattr(modal_obj, key, value[0])
+                modal_obj.save()
 
         return HttpResponse('Success', status=200)
 
@@ -235,13 +241,18 @@ def modal_api(request, store_name, product_id):
             response_dict['color_brightness'] = modal_obj.color_brightness
             response_dict['color_hue'] = modal_obj.color_hue
             response_dict['color_saturation'] = modal_obj.color_saturation
+            response_dict['size'] = modal_obj.size
+            response_dict['location'] = modal_obj.location
 
             response_dict['first_name'] = order_obj_first.first_name if hasattr(order_obj_first, 'first_name') else None
             response_dict['last_name'] = order_obj_first.last_name if hasattr(order_obj_first, 'last_name') else None
-            response_dict['province_code'] = order_obj_first.province_code if hasattr(order_obj_first, 'province_code') else None
-            response_dict['country_code'] = order_obj_first.country_code if hasattr(order_obj_first, 'country_code') else None
+            response_dict['province_code'] = order_obj_first.province_code if hasattr(order_obj_first,
+                                                                                      'province_code') else None
+            response_dict['country_code'] = order_obj_first.country_code if hasattr(order_obj_first,
+                                                                                    'country_code') else None
             response_dict['last_order_qty'] = order_obj_first.qty if hasattr(order_obj_first, 'qty') else None
-            response_dict['processed_at'] = order_obj_first.processed_at if hasattr(order_obj_first, 'processed_at') else None
+            response_dict['processed_at'] = order_obj_first.processed_at if hasattr(order_obj_first,
+                                                                                    'processed_at') else None
             response_dict['qty_from_look_back'] = order_obj.aggregate(Sum('qty'))['qty__sum']
 
             return JsonResponse(response_dict, safe=False)
