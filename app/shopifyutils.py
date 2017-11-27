@@ -43,7 +43,7 @@ def ingest_orders(stores_obj):
 
         if customer:
             first_name = customer.attributes['first_name']
-            last_name = customer.attributes['last_name']
+            last_name = customer.attributes['last_name'][0] + '.'  # First letter of last name
 
         if shipping_address:
             province_code = shipping_address.attributes['province_code']

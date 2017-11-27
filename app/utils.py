@@ -67,7 +67,7 @@ def populate_default_settings(store_name):
 
     try:
         store = Store.objects.get(store_name=store_name)
-    except Store.DoesNotExists:
+    except Store.DoesNotExist:
         store = store.objects.create(store_name=store_name)
 
     StoreSettings.objects.create(store=store)

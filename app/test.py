@@ -123,9 +123,6 @@ class SessionTests(TestCase):
             response = self.client.get(reverse('store_settings'))
             self.assertEqual(response.status_code, 200)
 
-            response = self.client.get(reverse('dashboard'))
-            self.assertEqual(response.status_code, 200)
-
             # Reset self.client
             self.client = Client()
 
@@ -134,10 +131,6 @@ class SessionTests(TestCase):
             session = self.client.session
 
             response = self.client.get(reverse('store_settings'))
-            self.assertRedirects(response, expected_url=reverse('install'), status_code=302,
-                                 fetch_redirect_response=False)
-
-            response = self.client.get(reverse('dashboard'))
             self.assertRedirects(response, expected_url=reverse('install'), status_code=302,
                                  fetch_redirect_response=False)
 

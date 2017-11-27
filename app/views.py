@@ -113,28 +113,6 @@ def store_settings(request):
 
 @xframe_options_exempt
 @shop_login_required
-def dashboard(request):
-    """
-    Analytics dashboard.
-    """
-    params = parse_params(request)
-    template = loader.get_template('app/index.html')
-    try:
-        shop = params['shop']
-
-        context = {
-            'api_key': settings.API_KEY,
-            'shop': shop,
-        }
-
-        return HttpResponse(template.render(context, request))
-    except Exception as e:
-        logger.error(e)
-        return HttpResponseBadRequest(e)
-
-
-@xframe_options_exempt
-@shop_login_required
 @api_authentication
 def store_settings_api(request, store_name):
     """
@@ -169,8 +147,11 @@ def store_settings_api(request, store_name):
     elif request.method == 'POST':
         post_params = dict(request.POST.lists())
 
-        store_settings_obj = StoreSettings.objects.get(store__store_name=store_name)
-        modal_obj = Modal.objects.get(store__store_name=store_name)
+        try:
+            store_settings_obj = StoreSettings.objects.get(store__store_name=store_name)
+            modal_obj = Modal.objects.get(store__store_name=store_name)
+        except Exception:
+            return HttpResponseBadRequest('{} does not exist'.format(store_name), status=400)
 
         for key, value in post_params.items():
             if hasattr(store_settings_obj, key):
@@ -221,7 +202,6 @@ def modal_api(request, store_name, product_id):
     """
     if request.method == 'GET':
         try:
-
             # Returned products should be within store's look_back parameter
             look_back = StoreSettings.objects.filter(store__store_name=store_name).values('look_back')[0]['look_back']
             time_threshold = timezone.now() - timedelta(seconds=look_back * 60 * 60)
