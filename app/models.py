@@ -56,3 +56,13 @@ class Modal(models.Model):
     color_brightness = models.FloatField(default=0.487)
     social_setting = models.TextField(default='latest')
     size = models.TextField(default='250,100')  # Modal size (wxh)
+
+
+class APIMetrics(models.Model):
+    view = models.TextField()
+    snapshot_date = models.DateField(null=True, blank=True)
+    view_count = models.IntegerField()
+    method = models.TextField(default=0)
+
+    class Meta:
+        unique_together = (('snapshot_date', 'view', 'method'),)

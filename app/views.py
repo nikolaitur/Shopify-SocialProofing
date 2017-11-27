@@ -11,7 +11,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.db.models import Sum
 
 from .utils import authenticate, parse_params, populate_default_settings
-from .decorators import shop_login_required, api_authentication
+from .decorators import shop_login_required, api_authentication, track_statistics
 from .models import Store, StoreSettings, Modal, Orders, Product
 from django.core import serializers
 from itertools import chain
@@ -22,6 +22,7 @@ from django.views.decorators.csrf import csrf_exempt
 logger = logging.getLogger(__name__)
 
 
+@track_statistics
 def install(request):
     """
     Redirect user to the shopify page to authenticate our app.
@@ -40,6 +41,7 @@ def install(request):
         return HttpResponseBadRequest(e)
 
 
+@track_statistics
 def auth_callback(request):
     """
     After the user has approved our app, they are redirected from Shopify to us with a temporary code.
@@ -67,6 +69,7 @@ def auth_callback(request):
         return HttpResponseBadRequest(e)
 
 
+@track_statistics
 @xframe_options_exempt
 def index(request):
     """
@@ -100,6 +103,7 @@ def index(request):
         return HttpResponseBadRequest(e)
 
 
+@track_statistics
 @xframe_options_exempt
 @shop_login_required
 def store_settings(request):
@@ -111,6 +115,7 @@ def store_settings(request):
     return HttpResponse(template.render())
 
 
+@track_statistics
 @xframe_options_exempt
 @shop_login_required
 @api_authentication
@@ -166,6 +171,7 @@ def store_settings_api(request, store_name):
     return HttpResponseBadRequest(status=400)
 
 
+@track_statistics
 @xframe_options_exempt
 @shop_login_required
 @api_authentication
@@ -181,6 +187,7 @@ def orders_api(request, store_name):
     return HttpResponseBadRequest('Invalid request')
 
 
+@track_statistics
 @xframe_options_exempt
 @shop_login_required
 @api_authentication
@@ -196,6 +203,7 @@ def products_api(request, store_name):
     return HttpResponseBadRequest('Invalid request')
 
 
+@track_statistics
 def modal_api(request, store_name, product_id):
     """
     Public modal api. Returns a json string with relevant modal information.
