@@ -228,6 +228,7 @@ def modal_api(request, store_name, product_id):
 
             response_dict['main_image_url'] = product_obj.main_image_url if hasattr(product_obj,
                                                                                     'main_image_url') and product_obj.main_image_url != '' else None
+            response_dict['handle'] = product_obj.handle if hasattr(product_obj, 'handle') else None
 
             response_dict['social_setting'] = modal_obj.social_setting
             response_dict['color_brightness'] = modal_obj.color_brightness

@@ -85,6 +85,7 @@ def ingest_products(stores_obj):
         product_id = product_listing.id
         product_name = product_listing.title
         product_images = product_listing.images
+        handle = product_listing.handle
 
         main_image_url = ''
         if product_images:
@@ -94,7 +95,8 @@ def ingest_products(stores_obj):
 
         Product.objects.update_or_create(product_id=product_id, store__store_name=stores_obj['store_name'],
                                          defaults={'product_name': product_name, 'store': store,
-                                                   'main_image_url': main_image_url})
+                                                   'main_image_url': main_image_url,
+                                                   'handle': handle, })
 
 
 if __name__ == '__main__':

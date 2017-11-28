@@ -27,6 +27,7 @@ class Product(models.Model):
     product_id = models.CharField(max_length=200)
     product_name = models.TextField()
     main_image_url = models.TextField(default='')
+    handle = models.TextField(default='')
 
     class Meta:
         unique_together = (('store', 'product_id'),)
