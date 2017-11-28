@@ -220,10 +220,14 @@ def modal_api(request, store_name, product_id):
                 .filter(processed_at__range=[time_threshold, timezone.now()])
             order_obj_first = order_obj.first()
             modal_obj = Modal.objects.filter(store__store_name=store_name).first()
+            product_obj = Product.objects.filter(product_id=product_id).first()
 
             response_dict = dict()
             response_dict['store_name'] = store_name
             response_dict['product_id'] = product_id
+
+            response_dict['main_image_url'] = product_obj.main_image_url if hasattr(product_obj,
+                                                                                    'main_image_url') and product_obj.main_image_url != '' else None
 
             response_dict['social_setting'] = modal_obj.social_setting
             response_dict['color_brightness'] = modal_obj.color_brightness

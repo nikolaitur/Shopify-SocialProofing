@@ -84,9 +84,17 @@ def ingest_products(stores_obj):
     for product_listing in product_listings:
         product_id = product_listing.id
         product_name = product_listing.title
+        product_images = product_listing.images
+
+        main_image_url = ''
+        if product_images:
+            position = product_images[0].attributes['position']
+            assert position == 1, 'Warning: Image may not be the main image (not position 1).'
+            main_image_url = product_images[0].attributes['src']
 
         Product.objects.update_or_create(product_id=product_id, store__store_name=stores_obj['store_name'],
-                                         defaults={'product_name': product_name, 'store': store})
+                                         defaults={'product_name': product_name, 'store': store,
+                                                   'main_image_url': main_image_url})
 
 
 if __name__ == '__main__':
