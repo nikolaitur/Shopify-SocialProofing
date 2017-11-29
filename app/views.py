@@ -321,7 +321,7 @@ def related_products_api(request, store_name, product_id, search_type):
                     continue
 
             related_product_ids = list(related_product_ids)
-            response_dict['related_product_ids'] = ', '.join(related_product_ids)
+            response_dict['related_product_ids'] = ','.join(related_product_ids)
 
             return JsonResponse(response_dict, safe=False)
         except Exception as e:
