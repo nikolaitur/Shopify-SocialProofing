@@ -1,0 +1,29 @@
+{
+  "name": "Shopify-SocialProofing",
+  "scripts": {
+  },
+  "env": {
+    "API_KEY": {
+      "required": true
+    },
+    "API_SECRET": {
+      "required": true
+    },
+    "DEPLOYED_ON": {
+      "required": true
+    },
+    "DEVELOPMENT_MODE": {
+      "required": true
+    }
+  },
+  "formation": {
+  },
+  "addons": [
+    "heroku-postgresql"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}
