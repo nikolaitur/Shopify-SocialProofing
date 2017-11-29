@@ -12,7 +12,7 @@ from django.db.models import Sum
 
 from .utils import authenticate, parse_params, populate_default_settings
 from .decorators import shop_login_required, api_authentication, track_statistics
-from .models import Store, StoreSettings, Modal, Orders, Product
+from .models import Store, StoreSettings, Modal, Orders, Product, Collection
 from django.core import serializers
 from itertools import chain
 from django.utils import timezone
@@ -211,7 +211,13 @@ def modal_api(request, store_name, product_id):
     if request.method == 'GET':
         try:
             # Returned products should be within store's look_back parameter
-            look_back = StoreSettings.objects.filter(store__store_name=store_name).values('look_back')[0]['look_back']
+            look_back_qs = StoreSettings.objects.filter(store__store_name=store_name)
+
+            if not look_back_qs:
+                logger.error('Error: Store {} not found.'.format(store_name))
+                return HttpResponse('Error: Store {} not found.'.format(store_name))
+
+            look_back = look_back_qs.values('look_back')[0]['look_back']
             time_threshold = timezone.now() - timedelta(seconds=look_back * 60 * 60)
 
             order_obj = Orders.objects \
@@ -222,6 +228,9 @@ def modal_api(request, store_name, product_id):
             modal_obj = Modal.objects.filter(store__store_name=store_name).first()
             product_obj = Product.objects.filter(product_id=product_id).first()
 
+            collection_obj = Collection.objects.filter(product__product_id=product_id).values('collection_id')
+            collection_ids = ', '.join([k['collection_id'] for k in list(collection_obj)])
+
             response_dict = dict()
             response_dict['store_name'] = store_name
             response_dict['product_id'] = product_id
@@ -229,6 +238,11 @@ def modal_api(request, store_name, product_id):
             response_dict['main_image_url'] = product_obj.main_image_url if hasattr(product_obj,
                                                                                     'main_image_url') and product_obj.main_image_url != '' else None
             response_dict['handle'] = product_obj.handle if hasattr(product_obj, 'handle') else None
+            response_dict['product_type'] = product_obj.product_type if hasattr(product_obj, 'product_type') else None
+            response_dict['vendor'] = product_obj.vendor if hasattr(product_obj, 'vendor') else None
+            response_dict['tags'] = product_obj.tags if hasattr(product_obj, 'tags') else None
+
+            response_dict['collection_ids'] = collection_ids if collection_ids else None
 
             response_dict['social_setting'] = modal_obj.social_setting
             response_dict['color_brightness'] = modal_obj.color_brightness
@@ -247,6 +261,67 @@ def modal_api(request, store_name, product_id):
             response_dict['processed_at'] = order_obj_first.processed_at if hasattr(order_obj_first,
                                                                                     'processed_at') else None
             response_dict['qty_from_look_back'] = order_obj.aggregate(Sum('qty'))['qty__sum']
+
+            return JsonResponse(response_dict, safe=False)
+        except Exception as e:
+            logger.error(e)
+            return HttpResponseBadRequest('Something went wrong.')
+
+    return HttpResponseBadRequest('Invalid request')
+
+
+@track_statistics
+def related_products_api(request, store_name, product_id, search_type):
+    """
+    Public related products api. Returns a json string with list of related products based on search type.
+    """
+    if request.method == 'GET':
+        try:
+            related_product_ids = set()
+            response_dict = dict()
+
+            products = Product.objects.filter(store__store_name=store_name).values()
+            collections = Collection.objects.filter(product__store__store_name=store_name)
+
+            target_product = Product.objects.filter(store__store_name=store_name, product_id=product_id).first()
+            target_collection = Collection.objects.filter(product__product_id=product_id).first()
+
+            response_dict['store_name'] = store_name
+            response_dict['product_id'] = product_id
+            response_dict['search_type'] = search_type
+            response_dict['related_product_ids'] = ''
+
+            if not target_product or not target_collection:
+                return JsonResponse(response_dict, safe=False)
+
+            for product in products:
+                if product['product_id'] == target_product.product_id:
+                    continue
+
+                if 'vendor' in search_type and product['vendor'] == target_product.vendor:
+                    related_product_ids.add(product['product_id'])
+                    continue
+
+                if 'product_type' in search_type and product['product_type'] == target_product.product_type:
+                    related_product_ids.add(product['product_id'])
+                    continue
+
+                # Any word in target tag matches in product tag
+                if 'tags' in search_type and len(
+                                set(target_product.tags.split(', ')) & set(product['tags'].split(', '))) > 0:
+                    related_product_ids.add(product['product_id'])
+                    continue
+
+            for collection in collections:
+                if collection.get_product_id() == target_product.product_id:
+                    continue
+
+                if 'collection' in search_type and target_collection.collection_id == collection.collection_id:
+                    related_product_ids.add(collection.get_product_id())
+                    continue
+
+            related_product_ids = list(related_product_ids)
+            response_dict['related_product_ids'] = ', '.join(related_product_ids)
 
             return JsonResponse(response_dict, safe=False)
         except Exception as e:

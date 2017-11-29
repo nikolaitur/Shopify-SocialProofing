@@ -172,3 +172,57 @@ class TestStoreSettingsAPI(TestCase):
                  'duration': '5'},
             )
             self.assertEqual(response.status_code, 200)
+
+
+class TestRelatedProductsAPI(TestCase):
+    """
+    Test Related Products API
+    """
+    fixtures = ['entrypoint_fixture.json']
+
+    def setUp(self):
+        self.client = Client()
+
+    def test_get_valid_request(self):
+        with self.settings(DEVELOPMENT_MODE='PRODUCTION'):
+            response = self.client.get(
+                reverse('related_products_api', kwargs={'store_name': 'michael-john-devs.myshopify.com',
+                                                        'product_id': '293835145247',
+                                                        'search_type': 'tags,product_type,vendor,collection'}))
+            self.assertEqual(response.status_code, 200)
+
+    def test_get_invalid_request(self):
+        response = self.client.get(
+            reverse('related_products_api', kwargs={'store_name': 'michael-john-devs.myshopify.com',
+                                                    'product_id': '11111',
+                                                    'search_type': ''}))
+        self.assertEqual(response.status_code, 200)
+
+
+class TestModalAPI(TestCase):
+    """
+    Test Modal API
+    """
+    fixtures = ['entrypoint_fixture.json']
+
+    def setUp(self):
+        self.client = Client()
+
+    def test_get_valid_request(self):
+        response = self.client.get(
+            reverse('modal_api', kwargs={'store_name': 'michael-john-devs.myshopify.com',
+                                         'product_id': '293835145247', }))
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_invalid_request(self):
+        # Invalid product id
+        response = self.client.get(
+            reverse('modal_api', kwargs={'store_name': 'michael-john-devs.myshopify.com',
+                                         'product_id': '11111111111', }))
+        self.assertEqual(response.status_code, 200)
+
+        # Store does not exist
+        response = self.client.get(
+            reverse('modal_api', kwargs={'store_name': 'this-store-does-not-exist.com',
+                                         'product_id': '293835145247', }))
+        self.assertEqual(response.status_code, 200)

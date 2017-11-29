@@ -28,9 +28,23 @@ class Product(models.Model):
     product_name = models.TextField()
     main_image_url = models.TextField(default='')
     handle = models.TextField(default='')
+    product_type = models.TextField(default='')
+    vendor = models.TextField(default='')
+    tags = models.TextField(default='')
 
     class Meta:
         unique_together = (('store', 'product_id'),)
+
+
+class Collection(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    collection_id = models.TextField(default='')
+
+    def get_product_id(self):
+        return self.product.product_id
+
+    class Meta:
+        unique_together = (('product', 'collection_id'),)
 
 
 class Orders(models.Model):

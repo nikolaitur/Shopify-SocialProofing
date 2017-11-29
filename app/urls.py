@@ -28,4 +28,6 @@ urlpatterns = [
     url(r'^api/products/(?P<store_name>[a-zA-Z0-9_.-]*)/?$', views.products_api, name='products_api'),
     url(r'^api/modal/(?P<store_name>[a-zA-Z0-9_.-]*)/(?P<product_id>[0-9]*)/?$',
         views.modal_api, name='modal_api'),
+    url(r'^api/related/(?P<store_name>[a-zA-Z0-9_.-]*)/(?P<product_id>[0-9]*)/(?P<search_type>[a-zA-Z0-9,_.-]*)/?$',
+        views.related_products_api, name='related_products_api'),
 ]

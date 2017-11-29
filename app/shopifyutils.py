@@ -8,7 +8,7 @@ sys.path.append("..")  # here store is root folder(means parent).
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
 django.setup()
 
-from app.models import Store, Product, Orders
+from app.models import Store, Product, Orders, Collection
 from dateutil.parser import parse
 
 # Overrides the default function for context creation with the function to create an unverified context.
@@ -80,23 +80,34 @@ def ingest_products(stores_obj):
     shopify.ShopifyResource.activate_session(session)
     store = Store.objects.get(store_name=stores_obj['store_name'])
     product_listings = shopify.Product.find()
+    collection_listings = shopify.Collect.find()
 
     for product_listing in product_listings:
         product_id = product_listing.id
         product_name = product_listing.title
-        product_images = product_listing.images
+        product_image = product_listing.image
         handle = product_listing.handle
+        tags = product_listing.tags
 
-        main_image_url = ''
-        if product_images:
-            position = product_images[0].attributes['position']
-            assert position == 1, 'Warning: Image may not be the main image (not position 1).'
-            main_image_url = product_images[0].attributes['src']
+        vendor = product_listing.vendor if product_listing.vendor else ''
+        product_type = product_listing.product_type if product_listing.product_type else ''
+        main_image_url = product_image.attributes['src'] if product_image else ''
 
         Product.objects.update_or_create(product_id=product_id, store__store_name=stores_obj['store_name'],
                                          defaults={'product_name': product_name, 'store': store,
                                                    'main_image_url': main_image_url,
-                                                   'handle': handle, })
+                                                   'handle': handle,
+                                                   'vendor': vendor,
+                                                   'tags': tags,
+                                                   'product_type': product_type})
+
+    for collection_listing in collection_listings:
+        collection_id = collection_listing.attributes['collection_id']
+        product_id = collection_listing.attributes['product_id']
+
+        product = Product.objects.get(product_id=product_id)
+        Collection.objects.update_or_create(product=product, collection_id=collection_id,
+                                            defaults={'collection_id': collection_id})
 
 
 if __name__ == '__main__':
@@ -105,3 +116,5 @@ if __name__ == '__main__':
         if stores_obj['active']:
             ingest_products(stores_obj)
             ingest_orders(stores_obj)
+
+    print('Success.')
