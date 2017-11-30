@@ -225,4 +225,55 @@ class TestModalAPI(TestCase):
         response = self.client.get(
             reverse('modal_api', kwargs={'store_name': 'this-store-does-not-exist.com',
                                          'product_id': '293835145247', }))
+        self.assertEqual(response.status_code, 400)
+
+
+class TestModalMetricsAPI(TestCase):
+    """
+    Test Modal Metrics API
+    """
+    fixtures = ['entrypoint_fixture.json']
+
+    def setUp(self):
+        self.client = Client()
+
+    def test_get_valid_post_request(self):
+        response = self.client.post(reverse('modal_metrics_api'),
+                                    {'store_name': 'michael-john-devs.myshopify.com',
+                                     'product_id_from': '293835145247',
+                                     'product_id_to': '297692921887'})
         self.assertEqual(response.status_code, 200)
+
+    def test_get_invalid_post_request(self):
+        # Valid store, product that doesn't exist
+        response = self.client.post(reverse('modal_metrics_api'),
+                                    {'store_name': 'michael-john-devs.myshopify.com',
+                                     'product_id_from': '22222222',
+                                     'product_id_to': '111111111111'})
+        self.assertEqual(response.status_code, 400)
+
+        # Store that doesn't exist, valid products
+        response = self.client.post(reverse('modal_metrics_api'),
+                                    {'store_name': 'this-store-does-not-exist.com',
+                                     'product_id_from': '293835145247',
+                                     'product_id_to': '297692921887'})
+        self.assertEqual(response.status_code, 400)
+
+        # Valid store, valid product from but product to is a different store
+        response = self.client.post(reverse('modal_metrics_api'),
+                                    {'store_name': 'michael-john-devs.myshopify.com',
+                                     'product_id_from': '293835145247',
+                                     'product_id_to': '487347945514'})
+        self.assertEqual(response.status_code, 400)
+
+        # Not all parameters provided
+        response = self.client.post(reverse('modal_metrics_api'),
+                                    {'store_name': 'michael-john-devs.myshopify.com',
+                                     'product_id_to': '487347945514'})
+        self.assertEqual(response.status_code, 400)
+
+        # Not all parameters provided
+        response = self.client.post(reverse('modal_metrics_api'),
+                                    {'store_name': 'michael-john-devs.myshopify.com',
+                                     'product_id_to': '487347945514'})
+        self.assertEqual(response.status_code, 400)

@@ -12,9 +12,9 @@ from django.db.models import Sum
 
 from .utils import authenticate, parse_params, populate_default_settings
 from .decorators import shop_login_required, api_authentication, track_statistics
-from .models import Store, StoreSettings, Modal, Orders, Product, Collection
+from .models import Store, StoreSettings, Modal, Orders, Product, Collection, ModalMetrics
 from django.core import serializers
-from itertools import chain
+from datetime import date
 from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
@@ -214,8 +214,8 @@ def modal_api(request, store_name, product_id):
             look_back_qs = StoreSettings.objects.filter(store__store_name=store_name)
 
             if not look_back_qs:
-                logger.error('Error: Store {} not found.'.format(store_name))
-                return HttpResponse('Error: Store {} not found.'.format(store_name))
+                logger.error('{} does not exist'.format(store_name))
+                return HttpResponseBadRequest('{} does not exist'.format(store_name), status=400)
 
             look_back = look_back_qs.values('look_back')[0]['look_back']
             time_threshold = timezone.now() - timedelta(seconds=look_back * 60 * 60)
@@ -321,11 +321,51 @@ def related_products_api(request, store_name, product_id, search_type):
                     continue
 
             related_product_ids = list(related_product_ids)
-            response_dict['related_product_ids'] = ','.join(related_product_ids)
+            response_dict['related_product_ids'] = ', '.join(related_product_ids)
 
             return JsonResponse(response_dict, safe=False)
         except Exception as e:
             logger.error(e)
             return HttpResponseBadRequest('Something went wrong.')
+
+    return HttpResponseBadRequest('Invalid request')
+
+
+@track_statistics
+def modal_metrics_api(request):
+    """
+    Public modal metrics api. Stores metrics click data to our database.
+    """
+
+    if request.method == 'POST':
+        try:
+            post_params = dict(request.POST.lists())
+            snapshot_date = date.today()
+            store_name = post_params['store_name'][0]
+            product_id_from = post_params['product_id_from'][0]
+            product_id_to = post_params['product_id_to'][0]
+
+            try:
+                product_id_from_obj = Product.objects.get(product_id=product_id_from, store__store_name=store_name)
+                product_id_to_obj = Product.objects.get(product_id=product_id_to, store__store_name=store_name)
+                store_obj = Store.objects.get(store_name=store_name)
+            except (Store.DoesNotExist, Product.DoesNotExist):
+                logger.error(
+                    'Product {} or {} or Store {} does not exist'.format(product_id_from, product_id_to, store_name))
+                return HttpResponseBadRequest(
+                    'Product {} or {} or Store {} does not exist'.format(product_id_from, product_id_to, store_name))
+
+            try:
+                api_metrics_obj = ModalMetrics.objects.get(snapshot_date=snapshot_date, product_id_to=product_id_to_obj,
+                                                           product_id_from=product_id_from_obj, store=store_obj)
+                api_metrics_obj.click_count += 1
+                api_metrics_obj.save()
+            except Exception as e:
+                ModalMetrics.objects.create(snapshot_date=snapshot_date, product_id_to=product_id_to_obj,
+                                            product_id_from=product_id_from_obj, store=store_obj, click_count=1)
+
+            return HttpResponse('Success', status=200)
+        except Exception:
+            return HttpResponseBadRequest('Invalid post parameters provided', status=400)
 
     return HttpResponseBadRequest('Invalid request')

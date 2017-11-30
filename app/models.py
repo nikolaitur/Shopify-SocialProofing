@@ -82,3 +82,14 @@ class APIMetrics(models.Model):
 
     class Meta:
         unique_together = (('snapshot_date', 'view', 'method'),)
+
+
+class ModalMetrics(models.Model):
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    product_id_from = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_id_from')
+    product_id_to = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_id_to')
+    click_count = models.IntegerField()
+    snapshot_date = models.DateField(null=True, blank=True)
+
+    class Meta:
+        unique_together = (('snapshot_date', 'store', 'product_id_from', 'product_id_to'),)
