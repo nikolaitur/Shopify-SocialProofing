@@ -117,7 +117,7 @@ def store_settings(request):
     """
     template = loader.get_template('app/index.html')
     params = parse_params(request)
-    return HttpResponse(template.render())
+    return HttpResponse(template.render(params, request))
 
 
 @track_statistics

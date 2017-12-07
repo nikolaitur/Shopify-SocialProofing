@@ -24,8 +24,8 @@ class Settings extends Component {
       socialScope: '',
       location: ''
     };
-    this.appUrl = 'http://127.0.0.1:8000';
-    this.shop = new URLSearchParams(window.location.search).get('shop');
+    this.appUrl = context.appUrl;
+    this.shop = context.shop;
     this.handleSocialSetting = this.handleSocialSetting.bind(this);
     this.handleTime = this.handleTime.bind(this);
     this.handleClick = this.handleClick.bind(this);

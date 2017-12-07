@@ -2,7 +2,7 @@
   <script src="https://cdn.shopify.com/s/assets/external/app.js"></script>
   <script type="text/javascript">
     ShopifyApp.init({
-      apiKey: {{ api_key }},
+      apiKey: '{{ api_key }}',
       shopOrigin: 'https://{{ shop }}.myshopify.com'
     });
   </script>
@@ -17,6 +17,11 @@
 <!--Root Element for React -->
 <div id="root"></div>
 <script type="text/javascript">
+    var context = {
+        shop: '{{ shop }}',
+        appUrl: '{{ app_url }}'
+    };
+
     ShopifyApp.ready(function(){
         ShopifyApp.Bar.initialize({
             title: 'Hello Shopify - Index'

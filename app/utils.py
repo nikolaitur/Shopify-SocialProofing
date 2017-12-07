@@ -36,6 +36,8 @@ def parse_params(request):
     try:
         if request.method == 'GET':
             params = {}
+            params['app_url'] = settings.APP_URL
+            params['api_key'] = settings.API_KEY
 
             if 'code' in request.GET:
                 params['code'] = request.GET['code']

@@ -39,6 +39,12 @@ class DevelopmentToProductionDeploymentTest(TestCase):
         if settings.DEVELOPMENT_MODE == 'PRODUCTION':
             self.assertTrue(settings.DEBUG, False)
 
+    def test_app_url_is_not_localhost_nor_test_site(self):
+        if settings.DEVELOPMENT_MODE == 'PRODUCTION':
+            self.assertTrue('127.0.0.1' not in settings.APP_URL, 'App URL should not be pointed to localhost.')
+            self.assertTrue('protected-reef-37693' not in settings.APP_URL,
+                            'App URL should not be pointed to test site.')
+
 
 class EntryPointTests(TestCase):
     """

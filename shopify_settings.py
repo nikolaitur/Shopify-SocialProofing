@@ -14,4 +14,10 @@ else:
     raise EnvironmentError('DEVELOPMENT_MODE environment variable not set.')
 SOCIAL_SCOPES = ['product', 'vendor', 'collections', 'tags', 'product_type', 'any']
 SHOPIFY_API_SCOPE = ['write_products', 'read_products']
-SHOPIFY_AUTH_CALLBACK_URL = 'https://protected-reef-37693.herokuapp.com/auth/callback'
+
+if DEVELOPMENT_MODE == 'TEST':
+    APP_URL = 'https://protected-reef-37693.herokuapp.com'
+else:
+    APP_URL = '<TO-BE-DECIDED>'
+
+SHOPIFY_AUTH_CALLBACK_URL = APP_URL + '/auth/callback'

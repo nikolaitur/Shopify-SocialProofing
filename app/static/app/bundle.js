@@ -41805,8 +41805,8 @@ var Settings = function (_Component) {
       socialScope: '',
       location: ''
     };
-    _this.appUrl = 'http://127.0.0.1:8000';
-    _this.shop = new URLSearchParams(window.location.search).get('shop');
+    _this.appUrl = context.appUrl;
+    _this.shop = context.shop;
     _this.handleSocialSetting = _this.handleSocialSetting.bind(_this);
     _this.handleTime = _this.handleTime.bind(_this);
     _this.handleClick = _this.handleClick.bind(_this);
