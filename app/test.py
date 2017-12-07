@@ -164,14 +164,28 @@ class TestStoreSettingsAPI(TestCase):
 
     def test_post_valid_request(self):
         with self.settings(DEVELOPMENT_MODE='TEST'):
+            for social_scope in settings.SOCIAL_SCOPES:
+                response = self.client.post(
+                    reverse('store_settings_api', kwargs={'store_name': 'setup-store.myshopify.com'}),
+                    {'look_back': '24',
+                     'location': 'top-left',
+                     'color': '#FFFFF',
+                     'duration': '5',
+                     'social_scope': social_scope}
+                )
+                self.assertEqual(response.status_code, 200)
+
+    def test_post_invalid_request_bad_social_scope(self):
+        with self.settings(DEVELOPMENT_MODE='TEST'):
             response = self.client.post(
                 reverse('store_settings_api', kwargs={'store_name': 'setup-store.myshopify.com'}),
                 {'look_back': '24',
                  'location': 'top-left',
                  'color': '#FFFFF',
-                 'duration': '5'},
+                 'duration': '5',
+                 'social_scope': 'FOO'},
             )
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 400)
 
 
 class TestRelatedProductsAPI(TestCase):
@@ -187,15 +201,13 @@ class TestRelatedProductsAPI(TestCase):
         with self.settings(DEVELOPMENT_MODE='PRODUCTION'):
             response = self.client.get(
                 reverse('related_products_api', kwargs={'store_name': 'michael-john-devs.myshopify.com',
-                                                        'product_id': '293835145247',
-                                                        'search_type': 'tags,product_type,vendor,collection'}))
+                                                        'product_id': '293835145247'}))
             self.assertEqual(response.status_code, 200)
 
     def test_get_invalid_request(self):
         response = self.client.get(
             reverse('related_products_api', kwargs={'store_name': 'michael-john-devs.myshopify.com',
-                                                    'product_id': '11111',
-                                                    'search_type': ''}))
+                                                    'product_id': '11111'}))
         self.assertEqual(response.status_code, 200)
 
 
@@ -263,12 +275,6 @@ class TestModalMetricsAPI(TestCase):
         response = self.client.post(reverse('modal_metrics_api'),
                                     {'store_name': 'michael-john-devs.myshopify.com',
                                      'product_id_from': '293835145247',
-                                     'product_id_to': '487347945514'})
-        self.assertEqual(response.status_code, 400)
-
-        # Not all parameters provided
-        response = self.client.post(reverse('modal_metrics_api'),
-                                    {'store_name': 'michael-john-devs.myshopify.com',
                                      'product_id_to': '487347945514'})
         self.assertEqual(response.status_code, 400)
 

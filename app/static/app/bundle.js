@@ -41800,24 +41800,18 @@ var Settings = function (_Component) {
     var _this = _possibleConstructorReturn(this, (Settings.__proto__ || Object.getPrototypeOf(Settings)).call(this, props));
 
     _this.state = {
-      color: {
-        hue: '',
-        saturation: '',
-        brightness: ''
-      },
-      size: '',
-      width: '',
-      height: '',
       socialSetting: '',
-      socialTime: ''
+      socialTime: '',
+      socialScope: '',
+      location: ''
     };
     _this.appUrl = 'http://127.0.0.1:8000';
     _this.shop = new URLSearchParams(window.location.search).get('shop');
-    _this.handleColor = _this.handleColor.bind(_this);
-    _this.handleSize = _this.handleSize.bind(_this);
-    _this.handleSocial = _this.handleSocial.bind(_this);
+    _this.handleSocialSetting = _this.handleSocialSetting.bind(_this);
     _this.handleTime = _this.handleTime.bind(_this);
     _this.handleClick = _this.handleClick.bind(_this);
+    _this.handleSocialScope = _this.handleSocialScope.bind(_this);
+    _this.handleLocation = _this.handleLocation.bind(_this);
     return _this;
   }
 
@@ -41833,12 +41827,9 @@ var Settings = function (_Component) {
         var f_time = _this2.convertSocialTimeFromHours(data.look_back);
         _this2.setState({ socialTime: [f_time] });
 
+        _this2.setState({ location: [data.location] });
         _this2.setState({ socialSetting: [data.social_setting] });
-        _this2.setState({ size: [data.size] });
-        _this2.setState({ width: [data.size.split(',')[0]] });
-        _this2.setState({ height: [data.size.split(',')[1]] });
-
-        _this2.setState({ color: { hue: [data.color_hue], saturation: [data.color_saturation], brightness: [data.color_brightness] } });
+        _this2.setState({ socialScope: [data.social_scope] });
 
         return data;
       }).catch(function (e) {
@@ -41846,26 +41837,24 @@ var Settings = function (_Component) {
       });
     }
   }, {
-    key: 'handleColor',
-    value: function handleColor(color) {
-      this.setState({ color: color });
-    }
-  }, {
-    key: 'handleSize',
-    value: function handleSize(size) {
-      this.setState({ size: size });
-      var sizeArr = size[0].split(',');
-      this.setState({ width: sizeArr[0], height: sizeArr[1] });
-    }
-  }, {
-    key: 'handleSocial',
-    value: function handleSocial(social) {
-      this.setState({ socialSetting: social });
+    key: 'handleSocialSetting',
+    value: function handleSocialSetting(socialSetting) {
+      this.setState({ socialSetting: socialSetting });
     }
   }, {
     key: 'handleTime',
     value: function handleTime(time) {
       this.setState({ socialTime: time });
+    }
+  }, {
+    key: 'handleSocialScope',
+    value: function handleSocialScope(socialScope) {
+      this.setState({ socialScope: socialScope });
+    }
+  }, {
+    key: 'handleLocation',
+    value: function handleLocation(location) {
+      this.setState({ location: location });
     }
   }, {
     key: 'convertSocialTimeFromHours',
@@ -41874,17 +41863,14 @@ var Settings = function (_Component) {
 
       var f_time = void 0;
       switch (time) {
-        case 6:
-          f_time = "6h";
+        case 1:
+          f_time = "1h";
           break;
         case 12:
           f_time = "12h";
           break;
         case 24:
           f_time = "1d";
-          break;
-        case 36:
-          f_time = "3d";
           break;
         case 168:
           f_time = "7d";
@@ -41901,17 +41887,14 @@ var Settings = function (_Component) {
 
       var f_time = void 0;
       switch (time[0]) {
-        case "6h":
-          f_time = 6;
+        case "1h":
+          f_time = 1;
           break;
         case "12h":
           f_time = 12;
           break;
         case "1d":
           f_time = 24;
-          break;
-        case "3d":
-          f_time = 36;
           break;
         case "7d":
           f_time = 168;
@@ -41930,24 +41913,17 @@ var Settings = function (_Component) {
       postBodyStr += this.convertSocialTimeToHours(this.state.socialTime);
       postBodyStr += '&';
 
-      postBodyStr += 'color_hue=';
-      postBodyStr += this.state.color.hue;
-      postBodyStr += '&';
-
-      postBodyStr += 'color_saturation=';
-      postBodyStr += this.state.color.saturation;
-      postBodyStr += '&';
-
-      postBodyStr += 'color_brightness=';
-      postBodyStr += this.state.color.brightness;
-      postBodyStr += '&';
-
       postBodyStr += 'social_setting=';
       postBodyStr += this.state.socialSetting;
       postBodyStr += '&';
 
-      postBodyStr += 'size=';
-      postBodyStr += this.state.size;
+      postBodyStr += 'social_scope=';
+      postBodyStr += this.state.socialScope;
+      postBodyStr += '&';
+
+      postBodyStr += 'location=';
+      postBodyStr += this.state.location;
+      postBodyStr += '&';
 
       console.log(postBodyStr);
 
@@ -41962,18 +41938,10 @@ var Settings = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _state$color = this.state.color,
-          hue = _state$color.hue,
-          saturation = _state$color.saturation,
-          brightness = _state$color.brightness;
-
       var colorBoxStyle = {
-        width: this.state.width + 'px',
-        height: this.state.height + 'px',
         margin: '5px',
         float: 'right',
-        border: '1px solid',
-        backgroundColor: 'hsl(' + hue + ', ' + saturation * 100 + '%, ' + brightness * 100 + '%)'
+        border: '1px solid'
       };
 
       return _react2.default.createElement(
@@ -41988,37 +41956,22 @@ var Settings = function (_Component) {
             _polaris.Layout.AnnotatedSection,
             {
               title: 'Style',
-              description: 'Customize the size and appearance of the modal'
+              description: 'Customize the appearance and location of the modal'
             },
             _react2.default.createElement(
               _polaris.SettingToggle,
               null,
-              _react2.default.createElement(_polaris.ColorPicker, {
-                color: {
-                  hue: this.state.color.hue,
-                  brightness: this.state.color.brightness,
-                  saturation: this.state.color.saturation
-                },
-                onChange: this.handleColor
-              })
-            ),
-            _react2.default.createElement(
-              _polaris.SettingToggle,
-              null,
               _react2.default.createElement(_polaris.ChoiceList, {
-                title: 'Dimensions in pixels',
+                title: 'Location',
                 choices: [{
-                  label: '250x100',
-                  value: '250,100'
+                  label: 'Lower left',
+                  value: 'lower-left'
                 }, {
-                  label: '250x150',
-                  value: '250,150'
-                }, {
-                  label: '300x100',
-                  value: '300,100'
+                  label: 'Lower right',
+                  value: 'lower-right'
                 }],
-                selected: this.state.size,
-                onChange: this.handleSize
+                selected: this.state.location,
+                onChange: this.handleLocation
               })
             )
           ),
@@ -42043,7 +41996,7 @@ var Settings = function (_Component) {
             _polaris.Layout.AnnotatedSection,
             {
               title: 'Social Proof Settings',
-              description: 'Display data as # of customers who have added this product, viewed the product, or display the last customer who purchased it.'
+              description: 'Display data as number of customers who have added this product, viewed the product, or display the last customer who purchased it.'
             },
             _react2.default.createElement(
               _polaris.Card,
@@ -42055,48 +42008,82 @@ var Settings = function (_Component) {
                   _polaris.FormLayout.Group,
                   null,
                   _react2.default.createElement(_polaris.ChoiceList, {
-                    title: 'Social Proof Settings (Default: display latest customer)',
+                    title: 'Social Proof Setting',
                     choices: [{
-                      label: '# of customers who have purchased this product',
-                      value: 'purchase'
-                    }, {
-                      label: '# of customers who have viewed this product',
-                      value: 'view'
-                    }, {
                       label: 'Display latest customer who purchased this product',
                       value: 'latest'
+                    }, {
+                      label: 'Display number of customers who have purchased this product',
+                      value: 'purchase'
                     }],
                     selected: this.state.socialSetting,
-                    onChange: this.handleSocial
+                    onChange: this.handleSocialSetting
                   }),
                   _react2.default.createElement(_polaris.ChoiceList, {
-                    title: 'Look Back Duration (Default 1 day)',
+                    title: 'Look Back Setting',
                     choices: [{
-                      label: 'Last 6 hours',
-                      value: '6h'
+                      label: 'Last hour',
+                      value: '1h'
                     }, {
                       label: 'Last 12 hours',
                       value: '12h'
                     }, {
-                      label: 'Last Day',
+                      label: 'Last day',
                       value: '1d'
                     }, {
-                      label: 'Last 3 Days',
-                      value: '3d'
-                    }, {
-                      label: 'Last 7 Days',
+                      label: '7 days (Recently)',
                       value: '7d'
                     }],
                     selected: this.state.socialTime,
                     onChange: this.handleTime
                   })
-                ),
-                _react2.default.createElement(
-                  _polaris.Button,
-                  { onClick: this.handleClick, primary: true },
-                  'Submit & Save'
                 )
               )
+            ),
+            _react2.default.createElement(
+              _polaris.Card,
+              { sectioned: true },
+              _react2.default.createElement(
+                _polaris.FormLayout,
+                null,
+                _react2.default.createElement(
+                  _polaris.FormLayout.Group,
+                  null,
+                  _react2.default.createElement(_polaris.ChoiceList, {
+                    title: 'Scope Setting',
+                    choices: [{
+                      label: 'Same Product',
+                      value: 'product'
+                    }, {
+                      label: 'Vendor',
+                      value: 'vendor'
+                    }, {
+                      label: 'Tags',
+                      value: 'tags'
+                    }, {
+                      label: 'Collections',
+                      value: 'collections'
+                    }, {
+                      label: 'Product Type',
+                      value: 'product_type'
+                    }, {
+                      label: 'Any (randomly selected)',
+                      value: 'any'
+                    }],
+                    selected: this.state.socialScope,
+                    onChange: this.handleSocialScope
+                  })
+                )
+              )
+            )
+          ),
+          _react2.default.createElement(
+            _polaris.Layout.Section,
+            null,
+            _react2.default.createElement(
+              _polaris.Button,
+              { onClick: this.handleClick, primary: true },
+              'Submit & Save'
             )
           ),
           _react2.default.createElement(

@@ -10,14 +10,15 @@ from django.template import loader
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.db.models import Sum
 
-from .utils import authenticate, parse_params, populate_default_settings
+from .utils import authenticate, parse_params, populate_default_settings, find_products_from_social_scope
 from .decorators import shop_login_required, api_authentication, track_statistics
 from .models import Store, StoreSettings, Modal, Orders, Product, Collection, ModalMetrics
 from django.core import serializers
 from datetime import date
 from django.utils import timezone
 from datetime import timedelta
-from django.views.decorators.csrf import csrf_exempt
+from random import choice
+from .shopifyutils import ingest_products, ingest_orders
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +95,11 @@ def index(request):
             return HttpResponseRedirect(reverse('install'))
 
         if exists_in_store_table and not exists_in_store_settings_table:
-            populate_default_settings(store_name)  # Populate store settings with defaults in db
+            populate_default_settings(store_name)
+
+            stores_obj = Store.objects.get(store_name=store_name)
+            ingest_products(stores_obj)
+            ingest_orders(stores_obj)
 
         return HttpResponseRedirect(reverse('store_settings'))
 
@@ -142,6 +147,7 @@ def store_settings_api(request, store_name):
             response_dict['color_saturation'] = modal_obj.color_saturation
             response_dict['size'] = modal_obj.size
             response_dict['location'] = modal_obj.location
+            response_dict['social_scope'] = modal_obj.social_scope
 
             return JsonResponse(response_dict, safe=False)
 
@@ -159,6 +165,9 @@ def store_settings_api(request, store_name):
             return HttpResponseBadRequest('{} does not exist'.format(store_name), status=400)
 
         for key, value in post_params.items():
+            if key == 'social_scope' and value[0] not in settings.SOCIAL_SCOPES:
+                return HttpResponseBadRequest('{} is not a valid social scope'.format(value), status=400)
+
             if hasattr(store_settings_obj, key):
                 setattr(store_settings_obj, key, value[0])
                 store_settings_obj.save()
@@ -220,20 +229,22 @@ def modal_api(request, store_name, product_id):
             look_back = look_back_qs.values('look_back')[0]['look_back']
             time_threshold = timezone.now() - timedelta(seconds=look_back * 60 * 60)
 
+            product_id_social = choice(find_products_from_social_scope(store_name, product_id))
+            product_obj = Product.objects.filter(product_id=product_id_social).first()
+
             order_obj = Orders.objects \
                 .filter(store__store_name=store_name) \
-                .filter(product__product_id=product_id) \
+                .filter(product__product_id=product_id_social) \
                 .filter(processed_at__range=[time_threshold, timezone.now()])
             order_obj_first = order_obj.first()
             modal_obj = Modal.objects.filter(store__store_name=store_name).first()
-            product_obj = Product.objects.filter(product_id=product_id).first()
 
-            collection_obj = Collection.objects.filter(product__product_id=product_id).values('collection_id')
-            collection_ids = ', '.join([k['collection_id'] for k in list(collection_obj)])
+            collection_obj = Collection.objects.filter(product__product_id=product_id_social).values('collection_id')
+            collection_ids = ','.join([k['collection_id'] for k in list(collection_obj)])
 
             response_dict = dict()
             response_dict['store_name'] = store_name
-            response_dict['product_id'] = product_id
+            response_dict['product_id'] = product_id_social
 
             response_dict['main_image_url'] = product_obj.main_image_url if hasattr(product_obj,
                                                                                     'main_image_url') and product_obj.main_image_url != '' else None
@@ -250,6 +261,7 @@ def modal_api(request, store_name, product_id):
             response_dict['color_saturation'] = modal_obj.color_saturation
             response_dict['size'] = modal_obj.size
             response_dict['location'] = modal_obj.location
+            response_dict['social_scope'] = modal_obj.social_scope
 
             response_dict['first_name'] = order_obj_first.first_name if hasattr(order_obj_first, 'first_name') else None
             response_dict['last_name'] = order_obj_first.last_name if hasattr(order_obj_first, 'last_name') else None
@@ -271,58 +283,15 @@ def modal_api(request, store_name, product_id):
 
 
 @track_statistics
-def related_products_api(request, store_name, product_id, search_type):
+def related_products_api(request, store_name, product_id):
     """
-    Public related products api. Returns a json string with list of related products based on search type.
+    Public related products api. Returns a json string with list of related products based store's social scope.
     """
     if request.method == 'GET':
         try:
-            related_product_ids = set()
             response_dict = dict()
-
-            products = Product.objects.filter(store__store_name=store_name).values()
-            collections = Collection.objects.filter(product__store__store_name=store_name)
-
-            target_product = Product.objects.filter(store__store_name=store_name, product_id=product_id).first()
-            target_collection = Collection.objects.filter(product__product_id=product_id).first()
-
-            response_dict['store_name'] = store_name
-            response_dict['product_id'] = product_id
-            response_dict['search_type'] = search_type
-            response_dict['related_product_ids'] = ''
-
-            if not target_product or not target_collection:
-                return JsonResponse(response_dict, safe=False)
-
-            for product in products:
-                if product['product_id'] == target_product.product_id:
-                    continue
-
-                if 'vendor' in search_type and product['vendor'] == target_product.vendor:
-                    related_product_ids.add(product['product_id'])
-                    continue
-
-                if 'product_type' in search_type and product['product_type'] == target_product.product_type:
-                    related_product_ids.add(product['product_id'])
-                    continue
-
-                # Any word in target tag matches in product tag
-                if 'tags' in search_type and len(
-                                set(target_product.tags.split(', ')) & set(product['tags'].split(', '))) > 0:
-                    related_product_ids.add(product['product_id'])
-                    continue
-
-            for collection in collections:
-                if collection.get_product_id() == target_product.product_id:
-                    continue
-
-                if 'collection' in search_type and target_collection.collection_id == collection.collection_id:
-                    related_product_ids.add(collection.get_product_id())
-                    continue
-
-            related_product_ids = list(related_product_ids)
-            response_dict['related_product_ids'] = ', '.join(related_product_ids)
-
+            related_product_ids = find_products_from_social_scope(store_name, product_id)
+            response_dict['related_product_ids'] = ','.join(related_product_ids)
             return JsonResponse(response_dict, safe=False)
         except Exception as e:
             logger.error(e)

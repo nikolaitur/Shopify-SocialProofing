@@ -19,24 +19,18 @@ class Settings extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      color: {
-        hue: '',
-        saturation: '',
-        brightness: ''
-      },
-      size: '',
-      width: '',
-      height: '',
       socialSetting: '',
-      socialTime: ''
+      socialTime: '',
+      socialScope: '',
+      location: ''
     };
     this.appUrl = 'http://127.0.0.1:8000';
     this.shop = new URLSearchParams(window.location.search).get('shop');
-    this.handleColor = this.handleColor.bind(this);
-    this.handleSize = this.handleSize.bind(this);
-    this.handleSocial = this.handleSocial.bind(this);
+    this.handleSocialSetting = this.handleSocialSetting.bind(this);
     this.handleTime = this.handleTime.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.handleSocialScope = this.handleSocialScope.bind(this);
+    this.handleLocation = this.handleLocation.bind(this);
   }
 
   componentWillMount () {
@@ -48,12 +42,9 @@ class Settings extends Component {
         var f_time = this.convertSocialTimeFromHours(data.look_back);
         this.setState({socialTime: [f_time]});
 
+        this.setState({location: [data.location]});
         this.setState({socialSetting: [data.social_setting]});
-        this.setState({size: [data.size]});
-        this.setState({width: [data.size.split(',')[0]]});
-        this.setState({height: [data.size.split(',')[1]]});
-
-        this.setState({color: {hue: [data.color_hue], saturation: [data.color_saturation], brightness: [data.color_brightness]}});
+        this.setState({socialScope: [data.social_scope]});
 
         return data;
     }).catch((e) => {
@@ -61,22 +52,20 @@ class Settings extends Component {
     });
   }
 
-  handleColor (color) {
-    this.setState({color});
-  }
-
-  handleSize (size) {
-    this.setState({size})
-    let sizeArr = size[0].split(',');
-    this.setState({width: sizeArr[0], height: sizeArr[1]});
-  }
-
-  handleSocial (social) {
-    this.setState({socialSetting: social})
+  handleSocialSetting (socialSetting) {
+    this.setState({socialSetting: socialSetting})
   }
 
   handleTime (time) {
     this.setState({socialTime: time})
+  }
+
+  handleSocialScope (socialScope) {
+    this.setState({socialScope: socialScope})
+  }
+
+  handleLocation (location) {
+    this.setState({location: location})
   }
 
   convertSocialTimeFromHours(time) {
@@ -84,17 +73,14 @@ class Settings extends Component {
 
     let f_time;
     switch (time) {
-          case 6:
-            f_time = "6h";
+          case 1:
+            f_time = "1h";
             break;
           case 12:
             f_time = "12h";
             break;
           case 24:
             f_time = "1d";
-            break;
-          case 36:
-            f_time = "3d";
             break;
           case 168:
             f_time = "7d";
@@ -110,17 +96,14 @@ class Settings extends Component {
 
     let f_time;
     switch (time[0]) {
-          case "6h":
-            f_time = 6;
+          case "1h":
+            f_time = 1;
             break;
           case "12h":
             f_time = 12;
             break;
           case "1d":
             f_time = 24;
-            break;
-          case "3d":
-            f_time = 36;
             break;
           case "7d":
             f_time = 168;
@@ -138,24 +121,17 @@ class Settings extends Component {
     postBodyStr += this.convertSocialTimeToHours(this.state.socialTime);
     postBodyStr += '&';
 
-    postBodyStr += 'color_hue=';
-    postBodyStr += this.state.color.hue;
-    postBodyStr += '&';
-
-    postBodyStr += 'color_saturation=';
-    postBodyStr += this.state.color.saturation;
-    postBodyStr += '&';
-
-    postBodyStr += 'color_brightness=';
-    postBodyStr += this.state.color.brightness;
-    postBodyStr += '&';
-
     postBodyStr += 'social_setting=';
     postBodyStr += this.state.socialSetting;
     postBodyStr += '&';
 
-    postBodyStr += 'size=';
-    postBodyStr += this.state.size;
+    postBodyStr += 'social_scope=';
+    postBodyStr += this.state.socialScope;
+    postBodyStr += '&';
+
+    postBodyStr += 'location=';
+    postBodyStr += this.state.location;
+    postBodyStr += '&';
 
     console.log(postBodyStr);
 
@@ -169,14 +145,10 @@ class Settings extends Component {
   }
 
   render() {
-    const { hue, saturation, brightness } = this.state.color;
     const colorBoxStyle = {
-      width: `${this.state.width}px`,
-      height: `${this.state.height}px`,
       margin: '5px',
       float: 'right',
       border: '1px solid',
-      backgroundColor: `hsl(${hue}, ${saturation * 100}%, ${brightness * 100}%)`
     }
 
     return (
@@ -186,37 +158,23 @@ class Settings extends Component {
         <Layout>
           <Layout.AnnotatedSection
             title="Style"
-            description="Customize the size and appearance of the modal"
+            description="Customize the appearance and location of the modal"
           >
             <SettingToggle>
-              <ColorPicker
-                color={{
-                  hue: this.state.color.hue,
-                  brightness: this.state.color.brightness,
-                  saturation: this.state.color.saturation
-                }}
-                onChange={this.handleColor}
-              />
-            </SettingToggle>
-            <SettingToggle>
               <ChoiceList
-                title="Dimensions in pixels"
+                title="Location"
                 choices={[
                   {
-                    label: '250x100',
-                    value: '250,100'
+                    label: 'Lower left',
+                    value: 'lower-left'
                   },
                   {
-                    label: '250x150',
-                    value: '250,150'
-                  },
-                  {
-                    label: '300x100',
-                    value: '300,100'
+                    label: 'Lower right',
+                    value: 'lower-right'
                   }
                 ]}
-                selected={this.state.size}
-                onChange={this.handleSize}
+                selected={this.state.location}
+                onChange={this.handleLocation}
               />
             </SettingToggle>
           </Layout.AnnotatedSection>
@@ -233,63 +191,97 @@ class Settings extends Component {
           </Layout.AnnotatedSection>
           <Layout.AnnotatedSection
             title="Social Proof Settings"
-            description="Display data as # of customers who have added this product, viewed the product,
+            description="Display data as number of customers who have added this product, viewed the product,
             or display the last customer who purchased it."
           >
-            <Card sectioned>
-              <FormLayout>
-                <FormLayout.Group>
-                  <ChoiceList
-                    title="Social Proof Settings (Default: display latest customer)"
-                    choices={[
-                      {
-                        label: '# of customers who have purchased this product',
-                        value: 'purchase'
-                      },
-                      {
-                        label: '# of customers who have viewed this product',
-                        value: 'view'
-                      },
-                      {
-                        label: 'Display latest customer who purchased this product',
-                        value: 'latest'
-                      }
-                    ]}
-                    selected={this.state.socialSetting}
-                    onChange={this.handleSocial}
-                  />
-                  <ChoiceList
-                    title="Look Back Duration (Default 1 day)"
-                    choices={[
-                      {
-                        label: 'Last 6 hours',
-                        value: '6h'
-                      },
-                      {
-                        label: 'Last 12 hours',
-                        value: '12h'
-                      },
-                      {
-                        label: 'Last Day',
-                        value: '1d'
-                      },
-                      {
-                        label: 'Last 3 Days',
-                        value: '3d'
-                      },
-                      {
-                        label: 'Last 7 Days',
-                        value: '7d'
-                      },
-                    ]}
-                    selected={this.state.socialTime}
-                    onChange={this.handleTime}
-                  />
-                </FormLayout.Group>
-                <Button onClick={this.handleClick} primary>Submit & Save</Button>
-              </FormLayout>
-            </Card>
+          <Card sectioned>
+            <FormLayout>
+              <FormLayout.Group>
+                <ChoiceList
+                  title="Social Proof Setting"
+                  choices={[
+                    {
+                      label: 'Display latest customer who purchased this product',
+                      value: 'latest'
+                    },
+                    {
+                      label: 'Display number of customers who have purchased this product',
+                      value: 'purchase'
+                    }
+                  ]}
+                  selected={this.state.socialSetting}
+                  onChange={this.handleSocialSetting}
+                />
+                <ChoiceList
+                  title="Look Back Setting"
+                  choices={[
+                    {
+                      label: 'Last hour',
+                      value: '1h'
+                    },
+                    {
+                      label: 'Last 12 hours',
+                      value: '12h'
+                    },
+                    {
+                      label: 'Last day',
+                      value: '1d'
+                    },
+                    {
+                      label: '7 days (Recently)',
+                      value: '7d'
+                    },
+                  ]}
+                  selected={this.state.socialTime}
+                  onChange={this.handleTime}
+                />
+              </FormLayout.Group>
+
+            </FormLayout>
+          </Card>
+          <Card sectioned>
+            <FormLayout>
+              <FormLayout.Group>
+                <ChoiceList
+                  title="Scope Setting"
+                  choices={[
+                    {
+                      label: 'Same Product',
+                      value: 'product'
+                    },
+                    {
+                      label: 'Vendor',
+                      value: 'vendor'
+                    },
+                    {
+                      label: 'Tags',
+                      value: 'tags'
+                    },
+                    {
+                      label: 'Collections',
+                      value: 'collections'
+                    },
+                    {
+                      label: 'Product Type',
+                      value: 'product_type'
+                    },
+                    {
+                      label: 'Any (randomly selected)',
+                      value: 'any'
+                    },
+                  ]}
+                  selected={this.state.socialScope}
+                  onChange={this.handleSocialScope}
+                />
+              </FormLayout.Group>
+
+            </FormLayout>
+          </Card>
           </Layout.AnnotatedSection>
+
+          <Layout.Section>
+          <Button onClick={this.handleClick} primary>Submit & Save</Button>
+          </Layout.Section>
 
           <Layout.Section>
             <FooterHelp>For help visit <Link url="https://www.google.com/search?ei=jLUIWvK0JojimAHg-KY4&q=help&oq=help&gs_l=psy-ab.3..0i67k1l2j0j0i67k1j0j0i67k1j0l4.1185.1507.0.1749.4.4.0.0.0.0.194.194.0j1.1.0....0...1.1.64.psy-ab..3.1.194....0.HDVDjU-AKiQ">styleguide</Link>.</FooterHelp>
