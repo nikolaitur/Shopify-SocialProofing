@@ -252,6 +252,7 @@ def modal_api(request, store_name, product_id):
             response_dict['product_type'] = product_obj.product_type if hasattr(product_obj, 'product_type') else None
             response_dict['vendor'] = product_obj.vendor if hasattr(product_obj, 'vendor') else None
             response_dict['tags'] = product_obj.tags if hasattr(product_obj, 'tags') else None
+            response_dict['product_name'] = product_obj.product_name if hasattr(product_obj, 'product_name') else None
 
             response_dict['collection_ids'] = collection_ids if collection_ids else None
 
