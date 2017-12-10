@@ -245,6 +245,7 @@ def modal_api(request, store_name, product_id):
             response_dict = dict()
             response_dict['store_name'] = store_name
             response_dict['product_id'] = product_id_social
+            response_dict['look_back'] = look_back
 
             response_dict['main_image_url'] = product_obj.main_image_url if hasattr(product_obj,
                                                                                     'main_image_url') and product_obj.main_image_url != '' else None

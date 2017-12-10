@@ -8,7 +8,7 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 # Authentication
-token = '11461aafd388df61fa87b44dfe1fe430'
+token = 'fb40ed51a032685beebb71c597502449'
 session = shopify.Session("michael-john-devs.myshopify.com.myshopify.com", token)
 shopify.ShopifyResource.activate_session(session)
 

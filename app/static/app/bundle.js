@@ -42010,10 +42010,10 @@ var Settings = function (_Component) {
                   _react2.default.createElement(_polaris.ChoiceList, {
                     title: 'Social Proof Setting',
                     choices: [{
-                      label: 'Display latest customer who purchased this product',
+                      label: 'Display latest customer to purchase product',
                       value: 'latest'
                     }, {
-                      label: 'Display number of customers who have purchased this product',
+                      label: 'Display number of customers who have purchased product',
                       value: 'purchase'
                     }],
                     selected: this.state.socialSetting,
