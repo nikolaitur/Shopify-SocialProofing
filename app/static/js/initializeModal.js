@@ -71,7 +71,7 @@
     },
     modalAnimation: function () {
       $(document).ready(function() {
-        $("#modal").animate({"opacity": "1"},3000);
+        $("#modal").animate({"opacity": "1"},2500);
       });
     },
     renderModal: function(settings) {
@@ -98,6 +98,8 @@
       api.renderImage(settings.main_image_url); // adding product image
       api.renderClose(); // Make the x close button
       api.addStyles(); // Add styles
+      //specific style for diff location
+      if (settings.location === "lower-right") modal.style.left = "73%";
       api.modalAnimation();
     },
     renderImage: function(imageUrl) {
@@ -199,6 +201,9 @@
       $(function() {
         $("#close").click(function() {
           $("#modal").animate({"opacity": "0"},800);
+          setTimeout( function(){
+            $('#modal').css('display','none');
+          },800);
         });
       });
     },
@@ -213,7 +218,7 @@
 
       var modalStyles = {
         width: "350px",
-        height: "80px",
+        height: "70px",
         display: "block",
         position: "fixed",
         bottom: "2%",
@@ -224,9 +229,9 @@
       }
 
       var imageContainerStyles = {
-        width: "25%",
+        width: "35%",
         position: "relative",
-        margin: "5px 5px 20px 5px"
+        margin: "0 5px 0 0"
       }
       
       var imageStyles = {
@@ -261,7 +266,7 @@
         position: "absolute",
         width: "75%",
         left: "75%",
-        top: "60px",
+        top: "50px",
         right: "10px",
         fontFamily: "Tahoma",
         fontSize: "12px",
