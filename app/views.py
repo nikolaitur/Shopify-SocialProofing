@@ -82,6 +82,9 @@ def index(request):
         session = authenticate(request)
         params = parse_params(request)
 
+        params['app_url'] = settings.APP_URL
+        params['api_key'] = settings.API_KEY
+
         request.session['shopify'] = {
             "shop_url": params['shop']
         }
@@ -117,6 +120,10 @@ def store_settings(request):
     """
     template = loader.get_template('app/index.html')
     params = parse_params(request)
+
+    params['app_url'] = settings.APP_URL
+    params['api_key'] = settings.API_KEY
+
     return HttpResponse(template.render(params, request))
 
 
