@@ -9,6 +9,7 @@ class Store(models.Model):
     store_name = models.CharField(max_length=200, unique=True)
     permanent_token = models.CharField(max_length=200)
     active = models.BooleanField(default=False)
+    shopify_api_scope = models.TextField(default='')
 
     def __str__(self):
         return self.store_name

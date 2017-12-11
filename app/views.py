@@ -53,7 +53,6 @@ def auth_callback(request):
         session = authenticate(request)
         params = parse_params(request)
         token = session.request_token(params)
-        logger.info('Received permanent token: {} from {}'.format(token, params['shop']))
 
         request.session['shopify'] = {
             "shop_url": params['shop']
@@ -61,7 +60,9 @@ def auth_callback(request):
 
         # Store permanent token or update if exists in db
         store, created = Store.objects.update_or_create(store_name=params['shop'],
-                                                        defaults={'permanent_token': token, 'active': True})
+                                                        defaults={'permanent_token': token, 'active': True,
+                                                                  'shopify_api_scope': ','.join(
+                                                                      settings.SHOPIFY_API_SCOPE)})
 
         # Return the user back to their shop
         return redirect('https://' + params['shop'])

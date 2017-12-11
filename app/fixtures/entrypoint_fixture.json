@@ -5,7 +5,8 @@
     "fields": {
         "store_name": "michael-john-devs.myshopify.com",
         "permanent_token": "fb40ed51a032685beebb71c597502449",
-        "active": true
+        "active": true,
+        "shopify_api_scope": "write_products,read_products,read_script_tags,write_script_tags,read_product_listings,read_orders,read_fulfillments,read_analytics"
     }
 },
 {
@@ -14,7 +15,8 @@
     "fields": {
         "store_name": "not-setup-store.myshopify.com",
         "permanent_token": "222",
-        "active": false
+        "active": false,
+        "shopify_api_scope": "write_products,read_products,read_script_tags,write_script_tags,read_product_listings,read_orders,read_fulfillments,read_analytics"
     }
 },
 {
@@ -23,7 +25,8 @@
     "fields": {
         "store_name": "setup-store.myshopify.com",
         "permanent_token": "333",
-        "active": false
+        "active": false,
+        "shopify_api_scope": "write_products,read_products,read_script_tags,write_script_tags,read_product_listings,read_orders,read_fulfillments,read_analytics"
     }
 },
 {
@@ -32,7 +35,8 @@
     "fields": {
         "store_name": "michaeljohnsecond.myshopify.com",
         "permanent_token": "6b1b69f12873fb27ab9ae32fbe3628ad",
-        "active": false
+        "active": false,
+        "shopify_api_scope": "write_products,read_products,read_script_tags,write_script_tags,read_product_listings,read_orders,read_fulfillments,read_analytics"
     }
 },
 {
@@ -358,7 +362,8 @@
         "color_saturation": 0.306,
         "color_brightness": 0.487,
         "social_setting": "view",
-        "size": "250,100"
+        "size": "250,100",
+        "social_scope": "product"
     }
 },
 {
@@ -371,7 +376,8 @@
         "color_saturation": 0.306,
         "color_brightness": 0.487,
         "social_setting": "latest",
-        "size": "250,100"
+        "size": "250,100",
+        "social_scope": "product"
     }
 },
 {
@@ -384,7 +390,8 @@
         "color_saturation": 0.306,
         "color_brightness": 0.487,
         "social_setting": "latest",
-        "size": "250,100"
+        "size": "250,100",
+        "social_scope": "product"
     }
 },
 {
