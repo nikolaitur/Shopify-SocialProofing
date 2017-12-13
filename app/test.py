@@ -108,7 +108,7 @@ class SessionTests(TestCase):
         with self.settings(DEVELOPMENT_MODE='TEST'):
             self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
             session = self.client.session
-            self.assertEqual(session['shopify'], {'shop_url': '123'})
+            self.assertEqual(session['shopify']['params']['shop'], '123')
 
             # Reset self.client
             self.client = Client()
@@ -116,7 +116,7 @@ class SessionTests(TestCase):
         with self.settings(DEVELOPMENT_MODE='PRODUCTION'):
             self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
             session = self.client.session
-            self.assertEqual(session.get('shopify', None), None)
+            self.assertEqual(session.get('shopify', {}).get('params', {}).get('shop', {}), {})
 
             # Reset self.client
             self.client = Client()
