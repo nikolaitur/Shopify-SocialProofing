@@ -55,7 +55,7 @@ def auth_callback(request):
         token = session.request_token(params)
 
         request.session['shopify'] = {
-            "shop_url": params['shop']
+            "params": params,
         }
 
         # Store permanent token or update if exists in db
@@ -87,7 +87,7 @@ def index(request):
         params['api_key'] = settings.API_KEY
 
         request.session['shopify'] = {
-            "shop_url": params['shop']
+            "params": params,
         }
 
         store_name = params['shop']
@@ -120,11 +120,7 @@ def store_settings(request):
     App settings.
     """
     template = loader.get_template('app/index.html')
-    params = parse_params(request)
-
-    params['app_url'] = settings.APP_URL
-    params['api_key'] = settings.API_KEY
-
+    params = request.session['shopify']['params']
     return HttpResponse(template.render(params, request))
 
 
