@@ -56,20 +56,6 @@ def parse_params(request):
         raise Exception('Failed to parse URI parameters')
 
 
-def populate_default_settings(store_name):
-    """
-    Populate db with default settings
-    """
-
-    try:
-        store = Store.objects.get(store_name=store_name)
-    except Store.DoesNotExist:
-        store = store.objects.create(store_name=store_name)
-
-    StoreSettings.objects.create(store=store)
-    Modal.objects.create(store=store)
-
-
 def find_products_from_social_scope(store_name, product_id):
     """
     Returns a list of products ids based on a store's social scope.

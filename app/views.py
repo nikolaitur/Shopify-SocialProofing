@@ -10,7 +10,7 @@ from django.template import loader
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.db.models import Sum
 
-from .utils import authenticate, parse_params, populate_default_settings, find_products_from_social_scope
+from .utils import authenticate, parse_params, find_products_from_social_scope
 from .decorators import shop_login_required, api_authentication, track_statistics
 from .models import Store, StoreSettings, Modal, Orders, Product, Collection, ModalMetrics
 from django.core import serializers
@@ -19,6 +19,7 @@ from django.utils import timezone
 from datetime import timedelta
 from random import choice
 from .shopifyutils import ingest_products, ingest_orders
+from .scripts.add_scripttag import add_script
 
 logger = logging.getLogger(__name__)
 
@@ -64,8 +65,11 @@ def auth_callback(request):
                                                                   'shopify_api_scope': ','.join(
                                                                       settings.SHOPIFY_API_SCOPE)})
 
-        # Return the user back to their shop
-        return redirect('https://' + params['shop'])
+        permission_url = session.create_permission_url(scope=settings.SHOPIFY_API_SCOPE,
+                                                       redirect_uri=settings.SHOPIFY_AUTH_CALLBACK_URL)
+
+        # Return the user back admin page
+        return redirect('https://' + params['shop'] + '/admin/apps')
     except Exception as e:
         logger.error(e)
         return HttpResponseBadRequest(e)
@@ -98,12 +102,14 @@ def index(request):
         if not exists_in_store_table and not exists_in_store_settings_table:
             return HttpResponseRedirect(reverse('install'))
 
-        if exists_in_store_table and not exists_in_store_settings_table:
-            populate_default_settings(store_name)
-
+        if not exists_in_store_settings_table:
+            # Populate database with default settings
             stores_obj = Store.objects.get(store_name=store_name)
+            StoreSettings.objects.create(store=stores_obj)
+            Modal.objects.create(store=stores_obj)
             ingest_products(stores_obj)
             ingest_orders(stores_obj)
+            add_script(stores_obj, 'initializeModal.js')
 
         return HttpResponseRedirect(reverse('store_settings'))
 

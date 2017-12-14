@@ -19,7 +19,7 @@ def get_stores():
     """
     Return all store names and permanent tokens as dictionary.
     """
-    return Store.objects.all().values('store_name', 'permanent_token', 'active')
+    return Store.objects.all()
 
 
 def ingest_orders(stores_obj):
@@ -27,9 +27,9 @@ def ingest_orders(stores_obj):
     Query each store in database and save orders to Orders table.
     """
 
-    session = shopify.Session(stores_obj['store_name'], stores_obj['permanent_token'])
+    session = shopify.Session(stores_obj.store_name, stores_obj.permanent_token)
     shopify.ShopifyResource.activate_session(session)
-    store = Store.objects.get(store_name=stores_obj['store_name'])
+    store = Store.objects.get(store_name=stores_obj.store_name)
     orders = shopify.Order.find()
 
     for order in orders:
@@ -60,7 +60,7 @@ def ingest_orders(stores_obj):
                 continue
 
             product = Product.objects.get(product_id=product_id)
-            Orders.objects.update_or_create(order_id=order_id, store__store_name=stores_obj['store_name'],
+            Orders.objects.update_or_create(order_id=order_id, store__store_name=stores_obj.store_name,
                                             product=product,
                                             defaults={'product': product,
                                                       'store': store,
@@ -76,9 +76,9 @@ def ingest_products(stores_obj):
     """
     Query each store in database and save products to Product table.
     """
-    session = shopify.Session(stores_obj['store_name'], stores_obj['permanent_token'])
+    session = shopify.Session(stores_obj.store_name, stores_obj.permanent_token)
     shopify.ShopifyResource.activate_session(session)
-    store = Store.objects.get(store_name=stores_obj['store_name'])
+    store = Store.objects.get(store_name=stores_obj.store_name)
     product_listings = shopify.Product.find()
     collection_listings = shopify.Collect.find()
 
@@ -93,7 +93,7 @@ def ingest_products(stores_obj):
         product_type = product_listing.product_type if product_listing.product_type else ''
         main_image_url = product_image.attributes['src'] if product_image else ''
 
-        Product.objects.update_or_create(product_id=product_id, store__store_name=stores_obj['store_name'],
+        Product.objects.update_or_create(product_id=product_id, store__store_name=stores_obj.store_name,
                                          defaults={'product_name': product_name, 'store': store,
                                                    'main_image_url': main_image_url,
                                                    'handle': handle,
@@ -113,7 +113,7 @@ def ingest_products(stores_obj):
 if __name__ == '__main__':
     stores_objs = get_stores()
     for stores_obj in stores_objs:
-        if stores_obj['active']:
+        if stores_obj.active:
             ingest_products(stores_obj)
             ingest_orders(stores_obj)
 
