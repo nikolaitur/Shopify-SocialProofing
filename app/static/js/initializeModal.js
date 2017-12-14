@@ -99,7 +99,9 @@
       api.renderClose(); // Make the x close button
       api.addStyles(); // Add styles
       //specific style for diff location
-      if (settings.location === "lower-right") modal.style.left = "73%";
+      if (settings.location === "lower-right") {
+        $("#modal").css({"left": "", "right": "2%"});
+      }
       api.modalAnimation();
       api.clickMetrics(settings.product_id);  // adding click handler to track metrics of how many people clicked.
     },
