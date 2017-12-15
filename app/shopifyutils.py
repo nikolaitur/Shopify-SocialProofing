@@ -2,6 +2,7 @@ import shopify
 import ssl
 import sys
 import os
+import datetime
 import django
 
 sys.path.append("..")  # here store is root folder(means parent).
@@ -30,7 +31,8 @@ def ingest_orders(stores_obj):
     session = shopify.Session(stores_obj.store_name, stores_obj.permanent_token)
     shopify.ShopifyResource.activate_session(session)
     store = Store.objects.get(store_name=stores_obj.store_name)
-    orders = shopify.Order.find()
+    created_at_min = datetime.datetime.now() - datetime.timedelta(days=10)
+    orders = shopify.Order.find(financial_status='paid', status='shipped', created_at_min=created_at_min)
 
     for order in orders:
         customer = order.attributes.get('customer', None)
