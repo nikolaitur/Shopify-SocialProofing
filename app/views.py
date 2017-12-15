@@ -20,8 +20,13 @@ from datetime import timedelta
 from random import choice
 from .shopifyutils import ingest_products, ingest_orders
 from .scripts.add_scripttag import add_script
+from django.conf import settings
+from slacker_log_handler import SlackerLogHandler
+
+slack_handler = SlackerLogHandler(settings.SLACK_API_KEY, 'production-logs', stack_trace=True)
 
 logger = logging.getLogger(__name__)
+logger.addHandler(slack_handler)
 
 
 @track_statistics

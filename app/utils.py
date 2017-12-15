@@ -3,9 +3,12 @@ import logging
 
 from django.conf import settings
 from .models import StoreSettings, Store, Modal, Product, Collection
+from slacker_log_handler import SlackerLogHandler
+
+slack_handler = SlackerLogHandler(settings.SLACK_API_KEY, 'production-logs', stack_trace=True)
 
 logger = logging.getLogger(__name__)
-
+logger.addHandler(slack_handler)
 
 def authenticate(request):
     """

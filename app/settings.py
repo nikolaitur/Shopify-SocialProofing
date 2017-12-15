@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -138,9 +138,11 @@ STATICFILES_DIRS = [
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
-#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Logging settings
+
+SLACK_API_KEY = 'xoxp-268664547554-268714171940-287418468818-c3d4e7ed36a3c9cd4d3f6c40686d1df9'
 
 LOGGING = {
     'version': 1,
@@ -169,6 +171,18 @@ LOGGING = {
             'backupCount': 0,
             'formatter': 'verbose',
         },
+    },
+    'slack-error': {
+        'level': 'ERROR',
+        'api_key': SLACK_API_KEY,
+        'class': 'slacker_log_handler.SlackerLogHandler',
+        'channel': '#production-logs'
+    },
+    'slack-info': {
+        'level': 'INFO',
+        'api_key': SLACK_API_KEY,
+        'class': 'slacker_log_handler.SlackerLogHandler',
+        'channel': '#production-logs'
     },
     'loggers': {
         'app': {
