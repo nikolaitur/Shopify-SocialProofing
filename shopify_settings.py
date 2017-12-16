@@ -19,6 +19,6 @@ SHOPIFY_API_SCOPE = ['write_products', 'read_products', 'read_script_tags', 'wri
 if DEVELOPMENT_MODE == 'TEST':
     APP_URL = 'https://protected-reef-37693.herokuapp.com'
 else:
-    APP_URL = '<TO-BE-DECIDED>'
+    APP_URL = 'https://socialproof-samurai.herokuapp.com'
 
 SHOPIFY_AUTH_CALLBACK_URL = APP_URL + '/auth/callback'
