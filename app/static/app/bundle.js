@@ -41803,7 +41803,8 @@ var Settings = function (_Component) {
       socialSetting: '',
       socialTime: '',
       socialScope: '',
-      location: ''
+      location: '',
+      settingSaved: false
     };
     _this.appUrl = context.appUrl;
     _this.shop = context.shop;
@@ -41812,6 +41813,8 @@ var Settings = function (_Component) {
     _this.handleClick = _this.handleClick.bind(_this);
     _this.handleSocialScope = _this.handleSocialScope.bind(_this);
     _this.handleLocation = _this.handleLocation.bind(_this);
+    _this.showSaveStatus = _this.showSaveStatus.bind(_this);
+    _this.convertDaysToTimestampText = _this.convertDaysToTimestampText.bind(_this);
     return _this;
   }
 
@@ -41825,16 +41828,20 @@ var Settings = function (_Component) {
       }).then(function (data) {
         console.log(data);
         var f_time = _this2.convertSocialTimeFromHours(data.look_back);
-        _this2.setState({ socialTime: [f_time] });
-
-        _this2.setState({ location: [data.location] });
-        _this2.setState({ socialSetting: [data.social_setting] });
-        _this2.setState({ socialScope: [data.social_scope] });
-
+        _this2.setState({ socialTime: [f_time], location: [data.location], socialSetting: [data.social_setting], socialScope: [data.social_scope] });
         return data;
       }).catch(function (e) {
         console.log('error' + e);
       });
+    }
+  }, {
+    key: 'showSaveStatus',
+    value: function showSaveStatus() {
+      this.setState({ settingSaved: true });
+      setTimeout(function () {
+        this.setState({ settingSaved: false });
+      }.bind(this), 4000);
+      console.log("this.state ", this.state.settingSaved);
     }
   }, {
     key: 'handleSocialSetting',
@@ -41855,12 +41862,12 @@ var Settings = function (_Component) {
     key: 'handleLocation',
     value: function handleLocation(location) {
       this.setState({ location: location });
+      console.log("this.state.location ", this.state.location);
     }
   }, {
     key: 'convertSocialTimeFromHours',
     value: function convertSocialTimeFromHours(time) {
       // Receive hours and convert to corresponding choice list value, e.g. 24 -> '1d'
-
       var f_time = void 0;
       switch (time) {
         case 1:
@@ -41884,7 +41891,6 @@ var Settings = function (_Component) {
     key: 'convertSocialTimeToHours',
     value: function convertSocialTimeToHours(time) {
       // Receive choice list value and convert to hours, e.g. '1d' -> 24
-
       var f_time = void 0;
       switch (time[0]) {
         case "1h":
@@ -41905,8 +41911,36 @@ var Settings = function (_Component) {
       return f_time;
     }
   }, {
+    key: 'convertDaysToTimestampText',
+    value: function convertDaysToTimestampText(days) {
+      // Returns days to timestamp text and floors it and units
+      var units = "";
+      var convertedTime = "";
+      if (days * 24 < 1) {
+        convertedTime = days * 24 * 60;
+        units = "minutes";
+      } else if (days < 1) {
+        convertedTime = days * 24;
+        units = "hours";
+      } else {
+        convertedTime = days;
+        units = "days";
+      }
+      convertedTime = Math.floor(convertedTime);
+
+      if (convertedTime == 1) {
+        units = units.replace("s", "");
+      }
+
+      return {
+        convertedTime: convertedTime,
+        units: units
+      };
+    }
+  }, {
     key: 'handleClick',
     value: function handleClick() {
+      var _this3 = this;
 
       var postBodyStr = '';
       postBodyStr += 'look_back=';
@@ -41933,17 +41967,89 @@ var Settings = function (_Component) {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: postBodyStr
+      }).then(function (resp) {
+        console.log("Successful post");
+        _this3.showSaveStatus();
       });
+    }
+  }, {
+    key: 'handlePreviewText',
+    value: function handlePreviewText() {
+      var _state = this.state,
+          socialSetting = _state.socialSetting,
+          socialTime = _state.socialTime;
+
+
+      var textObj = {
+        socialSettingText: "",
+        productName: "",
+        socialTime: ""
+      };
+      console.log("socialSetting ", socialSetting);
+
+      if (socialSetting[0] === 'latest') {
+        textObj.socialSettingText = "Victoria Y. purchased a";
+        textObj.productName = "Trendy Nautica Dress";
+      } else if (socialSetting[0] === 'purchase') {
+        textObj.socialSettingText = "23 people purchased";
+        textObj.productName = "Trendy Nautica Dress";
+      }
+      var time = this.convertSocialTimeFromHours(this.convertSocialTimeToHours(socialTime));
+      textObj.socialTime = textObj.socialTime == '7d' ? 'recently' : time + ' ago';
+      return textObj;
     }
   }, {
     key: 'render',
     value: function render() {
-      var colorBoxStyle = {
-        margin: '5px',
-        float: 'right',
-        border: '1px solid'
+      var modalPreviewStyle = {
+        width: "350px",
+        height: "70px",
+        position: "relative",
+        backgroundColor: "white",
+        boxShadow: "0 0 5px #888",
+        marginTop: "40px",
+        marginLeft: this.state.location[0] === "lower-right" ? "250px" : "0px"
+      };
+      var imageContainer = {
+        width: "35%",
+        margin: "0 5px 0 0"
+      };
+      var imageStyle = {
+        width: "auto",
+        border: "0",
+        maxHeight: "70px"
+      };
+      var specialTextStyles = {
+        position: "absolute",
+        width: "75%",
+        top: "0",
+        left: "30%",
+        right: "20px",
+        fontFamily: "Tahoma",
+        fontSize: "14px",
+        color: "#1A6BCA"
+      };
+      var productNameTextStyles = {
+        position: "absolute",
+        width: "75%",
+        top: "20px",
+        left: "30%",
+        right: "20px",
+        fontFamily: "Tahoma",
+        fontWeight: "bold",
+        fontSize: "15px"
+      };
+      var timestampTextStyles = {
+        position: "absolute",
+        left: "85%",
+        top: "50px",
+        width: "50px",
+        fontFamily: "Tahoma",
+        fontSize: "12px",
+        color: "#1A6BCA"
       };
 
+      var textObj = this.handlePreviewText();
       return _react2.default.createElement(
         _polaris.Page,
         {
@@ -41952,6 +42058,90 @@ var Settings = function (_Component) {
         _react2.default.createElement(
           _polaris.Layout,
           null,
+          _react2.default.createElement(
+            _polaris.Layout.AnnotatedSection,
+            {
+              title: 'Social Proof Settings'
+            },
+            _react2.default.createElement(
+              _polaris.Card,
+              { sectioned: true },
+              _react2.default.createElement(
+                _polaris.FormLayout,
+                null,
+                _react2.default.createElement(
+                  _polaris.FormLayout.Group,
+                  null,
+                  _react2.default.createElement(_polaris.ChoiceList, {
+                    title: 'Display Name or Number of Customers',
+                    choices: [{
+                      label: 'Display latest customer to purchase product',
+                      value: 'latest'
+                    }, {
+                      label: 'Display number of customers who have purchased product',
+                      value: 'purchase'
+                    }],
+                    selected: this.state.socialSetting,
+                    onChange: this.handleSocialSetting
+                  }),
+                  _react2.default.createElement(_polaris.ChoiceList, {
+                    title: 'Order History Time',
+                    choices: [{
+                      label: 'Last hour',
+                      value: '1h'
+                    }, {
+                      label: 'Last 12 hours',
+                      value: '12h'
+                    }, {
+                      label: 'Last day',
+                      value: '1d'
+                    }, {
+                      label: '7 days',
+                      value: '7d'
+                    }],
+                    selected: this.state.socialTime,
+                    onChange: this.handleTime
+                  })
+                )
+              )
+            ),
+            _react2.default.createElement(
+              _polaris.Card,
+              { sectioned: true },
+              _react2.default.createElement(
+                _polaris.FormLayout,
+                null,
+                _react2.default.createElement(
+                  _polaris.FormLayout.Group,
+                  null,
+                  _react2.default.createElement(_polaris.ChoiceList, {
+                    title: 'Promoted Product',
+                    choices: [{
+                      label: 'Product that customer is currently viewing',
+                      value: 'product'
+                    }, {
+                      label: 'Products from the same vendor',
+                      value: 'vendor'
+                    }, {
+                      label: 'Products with the same tags',
+                      value: 'tags'
+                    }, {
+                      label: 'Other Products from the same collection',
+                      value: 'collections'
+                    }, {
+                      label: 'Other Products with the same type',
+                      value: 'product_type'
+                    }, {
+                      label: 'All products from your store',
+                      value: 'any'
+                    }],
+                    selected: this.state.socialScope,
+                    onChange: this.handleSocialScope
+                  })
+                )
+              )
+            )
+          ),
           _react2.default.createElement(
             _polaris.Layout.AnnotatedSection,
             {
@@ -41984,95 +42174,33 @@ var Settings = function (_Component) {
             _react2.default.createElement(
               _polaris.Card,
               { sectioned: true },
-              'Preview of how your modal will look.',
               _react2.default.createElement(
                 'div',
-                { style: colorBoxStyle },
-                'This is the preview box.'
-              )
-            )
-          ),
-          _react2.default.createElement(
-            _polaris.Layout.AnnotatedSection,
-            {
-              title: 'Social Proof Settings',
-              description: 'Display data as number of customers who have added this product, viewed the product, or display the last customer who purchased it.'
-            },
-            _react2.default.createElement(
-              _polaris.Card,
-              { sectioned: true },
-              _react2.default.createElement(
-                _polaris.FormLayout,
                 null,
-                _react2.default.createElement(
-                  _polaris.FormLayout.Group,
-                  null,
-                  _react2.default.createElement(_polaris.ChoiceList, {
-                    title: 'Social Proof Setting',
-                    choices: [{
-                      label: 'Display latest customer to purchase product',
-                      value: 'latest'
-                    }, {
-                      label: 'Display number of customers who have purchased product',
-                      value: 'purchase'
-                    }],
-                    selected: this.state.socialSetting,
-                    onChange: this.handleSocialSetting
-                  }),
-                  _react2.default.createElement(_polaris.ChoiceList, {
-                    title: 'Look Back Setting',
-                    choices: [{
-                      label: 'Last hour',
-                      value: '1h'
-                    }, {
-                      label: 'Last 12 hours',
-                      value: '12h'
-                    }, {
-                      label: 'Last day',
-                      value: '1d'
-                    }, {
-                      label: '7 days (Recently)',
-                      value: '7d'
-                    }],
-                    selected: this.state.socialTime,
-                    onChange: this.handleTime
-                  })
-                )
-              )
-            ),
-            _react2.default.createElement(
-              _polaris.Card,
-              { sectioned: true },
+                'Preview of how your modal will look.'
+              ),
               _react2.default.createElement(
-                _polaris.FormLayout,
-                null,
+                'div',
+                { style: modalPreviewStyle },
                 _react2.default.createElement(
-                  _polaris.FormLayout.Group,
-                  null,
-                  _react2.default.createElement(_polaris.ChoiceList, {
-                    title: 'Scope Setting',
-                    choices: [{
-                      label: 'Same Product',
-                      value: 'product'
-                    }, {
-                      label: 'Vendor',
-                      value: 'vendor'
-                    }, {
-                      label: 'Tags',
-                      value: 'tags'
-                    }, {
-                      label: 'Collections',
-                      value: 'collections'
-                    }, {
-                      label: 'Product Type',
-                      value: 'product_type'
-                    }, {
-                      label: 'Any (randomly selected)',
-                      value: 'any'
-                    }],
-                    selected: this.state.socialScope,
-                    onChange: this.handleSocialScope
-                  })
+                  'div',
+                  { style: imageContainer },
+                  _react2.default.createElement('img', { style: imageStyle, src: 'http://via.placeholder.com/70x70' }),
+                  _react2.default.createElement(
+                    'span',
+                    { style: specialTextStyles },
+                    textObj.socialSettingText
+                  ),
+                  _react2.default.createElement(
+                    'span',
+                    { style: productNameTextStyles },
+                    textObj.productName
+                  ),
+                  _react2.default.createElement(
+                    'span',
+                    { style: timestampTextStyles },
+                    textObj.socialTime
+                  )
                 )
               )
             )
@@ -42084,6 +42212,12 @@ var Settings = function (_Component) {
               _polaris.Button,
               { onClick: this.handleClick, primary: true },
               'Submit & Save'
+            ),
+            ' ',
+            this.state.settingSaved && _react2.default.createElement(
+              'span',
+              null,
+              'Thank you! Your settings have been updated.'
             )
           ),
           _react2.default.createElement(
@@ -42092,13 +42226,7 @@ var Settings = function (_Component) {
             _react2.default.createElement(
               _polaris.FooterHelp,
               null,
-              'For help visit ',
-              _react2.default.createElement(
-                _polaris.Link,
-                { url: 'https://www.google.com/search?ei=jLUIWvK0JojimAHg-KY4&q=help&oq=help&gs_l=psy-ab.3..0i67k1l2j0j0i67k1j0j0i67k1j0l4.1185.1507.0.1749.4.4.0.0.0.0.194.194.0j1.1.0....0...1.1.64.psy-ab..3.1.194....0.HDVDjU-AKiQ' },
-                'styleguide'
-              ),
-              '.'
+              'Suggestions or Feedback? Email us at Michael.John.Devs@gmail.com'
             )
           )
         )

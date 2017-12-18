@@ -61,14 +61,6 @@
 
       return true;
     },
-    detectMobile: function () {
-      // not used for now
-      if(window.innerWidth <= 800 && window.innerHeight <= 600) {
-        return true;
-      } else {
-        return false;
-      }
-    },
     modalAnimation: function () {
       $(document).ready(function() {
         $("#modal").animate({"opacity": "1"},2500);
