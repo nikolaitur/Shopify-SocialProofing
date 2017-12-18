@@ -23,6 +23,29 @@ class AuthenticationTests(TestCase):
                                         'https://mystore.myshopify.com/admin/oauth/authorize'
                                         '?client_id=*&scope=*&redirect_uri=*'))
 
+    def test_invalid_shop_name_regex_auth_callback(self):
+        response1 = self.client.get(reverse('auth_callback'), {'hmac': '123',
+                                                              'locale': '123',
+                                                              'protocol': '123',
+                                                              'shop': 'does-not-end-in-my-shopify-dot-com',
+                                                              'timestamp': '123'})
+
+        response2 = self.client.get(reverse('auth_callback'), {'hmac': '123',
+                                                               'locale': '123',
+                                                               'protocol': '123',
+                                                               'shop': 'shop name with spaces',
+                                                               'timestamp': '123'})
+
+        response3 = self.client.get(reverse('auth_callback'), {'hmac': '123',
+                                                               'locale': '123',
+                                                               'protocol': '123',
+                                                               'shop': 'under_score_Special!#',
+                                                               'timestamp': '123'})
+
+        self.assertEqual(response1.status_code, 400)
+        self.assertEqual(response2.status_code, 400)
+        self.assertEqual(response3.status_code, 400)
+
 
 class DevelopmentToProductionDeploymentTest(TestCase):
     """

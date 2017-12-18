@@ -22,7 +22,9 @@ ssl._create_default_https_context = ssl._create_unverified_context
 slack_handler = SlackerLogHandler(settings.SLACK_API_KEY, 'production-logs', stack_trace=True)
 
 logger = logging.getLogger(__name__)
-logger.addHandler(slack_handler)
+
+if settings.DEVELOPMENT_MODE == 'PRODUCTION':
+    logger.addHandler(slack_handler)
 
 
 def authenticate(func):

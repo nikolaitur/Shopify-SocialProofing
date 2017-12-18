@@ -1,4 +1,5 @@
 import logging
+import re
 from urllib.parse import urlparse
 
 import shopify
@@ -26,7 +27,9 @@ from slacker_log_handler import SlackerLogHandler
 slack_handler = SlackerLogHandler(settings.SLACK_API_KEY, 'production-logs', stack_trace=True)
 
 logger = logging.getLogger(__name__)
-logger.addHandler(slack_handler)
+
+if settings.DEVELOPMENT_MODE == 'PRODUCTION':
+    logger.addHandler(slack_handler)
 
 
 @track_statistics
@@ -55,9 +58,14 @@ def auth_callback(request):
     We use this temporary code in exchange for a permanent one with offline access and store it in our db.
     """
     try:
-
         session = authenticate(request)
         params = parse_params(request)
+
+        if not params['shop'].endswith('myshopify.com') or not re.match('^([A-Za-z0-9\-.]+)$', params['shop']):
+            e = '{} is not a valid shopname'.format(params['shop'])
+            logger.error(e)
+            return HttpResponseBadRequest(e)
+
         token = session.request_token(params)
 
         request.session['shopify'] = {
