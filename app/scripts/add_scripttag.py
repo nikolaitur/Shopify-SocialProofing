@@ -36,11 +36,14 @@ def authenticate(func):
 
 @authenticate
 def add_script(stores_obj, script_name):
+    # Development app url: https://protected-reef-37693.herokuapp.com
+    # Production app url: https://socialproof-samurai.herokuapp.com
+
     # Add script tag to the shop
+    src = '{}/static/js/{}'.format(settings.APP_URL, script_name)
+
     try:
-        shopify.ScriptTag(dict(display_scope='all', event='onload',
-                               src='https://protected-reef-37693.herokuapp.com/static/js/{}'.format(
-                                   script_name))).save()
+        shopify.ScriptTag(dict(display_scope='all', event='onload', src=src)).save()
     except Exception as e:
         logger.error('Exception caught for {}. {}'.format(stores_obj.store_name, e))
 
@@ -76,12 +79,12 @@ def print_script_info(stores_obj):
 
 
 if __name__ == '__main__':
-    store_name = 'michael-john-devs.myshopify.com'
+    store_name = 'michaeljohnsecond.myshopify.com'
     stores_obj = Store.objects.get(store_name=store_name)
 
     print_script_info(stores_obj)
 
-    # script_name = 'initializeModal.js'
-    # add_script(stores_obj, script_name)
+    script_name = 'initializeModal.js'
+    add_script(stores_obj, script_name)
 
     # delete_all_scripts(stores_obj)

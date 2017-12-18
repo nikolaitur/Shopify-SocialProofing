@@ -16,7 +16,14 @@
       api.fetchSettingsFromAPI(shop, product)
     },
     fetchSettingsFromAPI: function (shop, product) {
-      var url = 'https://protected-reef-37693.herokuapp.com/api/modal/' + shop + '/' + product
+      if (window.location.href.includes('michael-john-devs') || window.location.href.includes('ellie-designer-clothing')) {
+        // Test app url
+        url = 'https://protected-reef-37693.herokuapp.com/api/modal/' + shop + '/' + product
+      } else {
+        // Production app url
+        url = 'https://socialproof-samurai.herokuapp.com/api/modal/' + shop + '/' + product
+      }
+      console.log(url);
       fetch(url)
       .then(function(response) {
         response.json().then(function(data) {
@@ -187,9 +194,18 @@
       $(document).ready(function(){
         var shop = Shopify.shop;
         var productFrom = meta.product.id;
+        if (window.location.href.includes('michael-john-devs') || window.location.href.includes('ellie-designer-clothing')) {
+          // Test app url
+          url = 'https://protected-reef-37693.herokuapp.com/api/modal/' + shop + '/' + product
+        } else {
+          // Production app url
+          url = 'https://socialproof-samurai.herokuapp.com/api/modal/' + shop + '/' + product
+        }
+        console.log(url);
+
         $("#product-name-text, #image").click(function(e){
           $.ajax({type: "POST",
-                  url: "https://protected-reef-37693.herokuapp.com/api/modal_metrics/",
+                  url: url,
                   data: { store_name: shop, product_id_to: productTo, product_id_from: productFrom},
                   success:function(){
                     console.log("Post was successful ", shop, productTo, productFrom);
