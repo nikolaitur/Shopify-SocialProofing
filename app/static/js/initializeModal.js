@@ -16,7 +16,7 @@
       api.fetchSettingsFromAPI(shop, product)
     },
     fetchSettingsFromAPI: function (shop, product) {
-      if (window.location.href.includes('michael-john-devs') || window.location.href.includes('ellie-designer-clothing' || window.location.href.includes('new-store-qa')) {
+      if (window.location.href.includes('michael-john-devs') || window.location.href.includes('ellie-designer-clothing') || window.location.href.includes('new-store-qa')) {
         // Test app url
         url = 'https://protected-reef-37693.herokuapp.com/api/modal/' + shop + '/' + product
       } else {
