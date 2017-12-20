@@ -31,4 +31,5 @@ urlpatterns = [
     url(r'^api/related/(?P<store_name>[a-zA-Z0-9_.-]*)/(?P<product_id>[0-9]*)/?$',
         views.related_products_api, name='related_products_api'),
     url(r'^api/modal_metrics/?$', views.modal_metrics_api, name='modal_metrics_api'),
+    url(r'^webhooks/?$', views.webhooks, name='webhooks'),
 ]
