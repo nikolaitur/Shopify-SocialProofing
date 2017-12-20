@@ -54,7 +54,7 @@ def ingest_orders(stores_obj):
 
             if customer:
                 first_name = customer.attributes['first_name']
-                last_name = customer.attributes['last_name'][0] + '.'  # First letter of last name
+                last_name = customer.attributes['last_name'][0] + '.' if customer.attributes['last_name'] else ''
 
             if shipping_address:
                 province_code = shipping_address.attributes['province_code']
@@ -160,5 +160,5 @@ if __name__ == '__main__':
         if stores_obj.active:
             ingest_products(stores_obj)
             ingest_orders(stores_obj)
-            create_webhook(stores_obj)
+            #create_webhook(stores_obj)
     print('Success.')
