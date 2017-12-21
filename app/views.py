@@ -78,22 +78,7 @@ def auth_callback(request):
                                                                   'shopify_api_scope': ','.join(
                                                                       settings.SHOPIFY_API_SCOPE)})
 
-        session = shopify.Session(params['shop'], token)
-        shopify.ShopifyResource.activate_session(session)
-
-        charge = shopify.RecurringApplicationCharge()
-        charge.name = 'Basic Plan'
-        charge.price = 4.99
-        charge.return_url = 'https://' + params['shop'] + '/admin/apps'
-        charge.trial_days = 30
-
-        if settings.DEVELOPMENT_MODE == 'TEST':
-            charge.test = True
-
-        if charge.save():
-            return redirect(charge.confirmation_url)
-        else:
-            return HttpResponseBadRequest('Something went wrong with the processing of your order.')
+        return redirect('https://' + params['shop'] + '/admin/apps')
     except Exception as e:
         logger.error(e)
         return HttpResponseBadRequest(e)
