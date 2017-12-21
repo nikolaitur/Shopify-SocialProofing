@@ -42002,13 +42002,13 @@ var Settings = function (_Component) {
     key: 'render',
     value: function render() {
       var modalPreviewStyle = {
-        width: "350px",
-        height: "70px",
+        width: "370px",
+        height: "80px",
         position: "relative",
         backgroundColor: "white",
         boxShadow: "0 0 5px #888",
         marginTop: "40px",
-        marginLeft: this.state.location[0] === "lower-right" ? "250px" : "0px"
+        marginLeft: this.state.location[0] === "lower-right" ? "230px" : "0px"
       };
       var imageContainer = {
         width: "35%",
@@ -42017,7 +42017,7 @@ var Settings = function (_Component) {
       var imageStyle = {
         width: "auto",
         border: "0",
-        maxHeight: "70px"
+        maxHeight: "80px"
       };
       var specialTextStyles = {
         position: "absolute",
@@ -42042,7 +42042,7 @@ var Settings = function (_Component) {
       var timestampTextStyles = {
         position: "absolute",
         left: "85%",
-        top: "50px",
+        top: "60px",
         width: "50px",
         fontFamily: "Tahoma",
         fontSize: "12px",
@@ -42115,7 +42115,7 @@ var Settings = function (_Component) {
                   _polaris.FormLayout.Group,
                   null,
                   _react2.default.createElement(_polaris.ChoiceList, {
-                    title: 'Promoted Product',
+                    title: 'Which Product(s) To Promote',
                     choices: [{
                       label: 'Product that customer is currently viewing',
                       value: 'product'

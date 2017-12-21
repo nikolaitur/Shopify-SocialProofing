@@ -53,8 +53,12 @@
           console.log('no one bought the item within the lookback look_back_period');
           return false;
         }
-        if (!data.first_name || !data.last_name) {
-          console.log('first or last name not provided for order');
+        if (!data.first_name && !data.last_name) {
+          console.log('first and last name not provided for order with latest as social setting');
+          return false;
+        }
+        if (data.first_name == "" && data.last_name == "") {
+          console.log('first and last name is "" with latest as social setting');
           return false;
         }
       }
@@ -143,6 +147,12 @@
       var timestampText = "";
       var productNameText = data.product_name;
 
+      if (productNameText.length >= 63) {
+        // Slice product name if it overflows modal
+        productNameText = productNameText.slice(0, 60);
+        productNameText += "...";
+      }
+
       var specialTextNode = document.getElementById("modal-special-text");
       var timestampTextNode = document.getElementById("timestamp-text");
       var imageNode = document.getElementById("product-image");
@@ -193,25 +203,28 @@
     clickMetrics: function (productTo) {
       $(document).ready(function(){
         var shop = Shopify.shop;
-        var productFrom = meta.product.id;
+        var productFrom = meta.product.id
+        var url = '';
         if (window.location.href.includes('michael-john-devs') || window.location.href.includes('ellie-designer-clothing') || window.location.href.includes('new-store-qa')) {
           // Test app url
-          url = 'https://protected-reef-37693.herokuapp.com/api/modal/' + shop + '/' + productFrom
+          url = 'https://protected-reef-37693.herokuapp.com/api/modal_metrics/';
         } else {
           // Production app url
-          url = 'https://socialproof-samurai.herokuapp.com/api/modal/' + shop + '/' + productFrom
+          url = 'https://socialproof-samurai.herokuapp.com/api/modal_metrics/';
         }
         console.log(url);
 
         $("#product-name-text, #image").click(function(e){
-          $.ajax({type: "POST",
-                  url: url,
-                  data: { store_name: shop, product_id_to: productTo, product_id_from: productFrom},
-                  success:function(){
-                    console.log("Post was successful ", shop, productTo, productFrom);
-                  }
-                });
-              });
+          if (productFrom != productTo) {
+            $.ajax({type: "POST",
+                    url: url,
+                    data: { store_name: shop, product_id_to: productTo, product_id_from: productFrom},
+                    success:function(){
+                      console.log("Post was successful ", shop, productTo, productFrom);
+                    }
+            });
+          }
+          });
         })
     },
     renderClose: function () {
@@ -240,8 +253,8 @@
       var close = document.getElementById("close");
 
       var modalStyles = {
-        width: "350px",
-        height: "70px",
+        width: "370px",
+        height: "80px",
         display: "block",
         position: "fixed",
         bottom: "2%",
@@ -258,14 +271,17 @@
       }
 
       var imageStyles = {
-        width: "auto",
         border: "0",
-        maxHeight: "70px"
+        maxHeight: "80px",
+        minHeight: "80px",
+        minWidth: "100px",
+        maxWidth: "100px",
+        objectFit: "cover"
       }
 
       var specialTextStyles = {
         position: "absolute",
-        width: "75%",
+        width: "70%",
         top: "0",
         left: "30%",
         right: "20px",
@@ -276,7 +292,7 @@
 
       var productNameTextStyles = {
         position: "absolute",
-        width: "75%",
+        width: "70%",
         top: "20px",
         left: "30%",
         right: "20px",
@@ -289,7 +305,7 @@
         position: "absolute",
         width: "75%",
         left: "75%",
-        top: "50px",
+        top: "60px",
         right: "10px",
         fontFamily: "Tahoma",
         fontSize: "12px",

@@ -357,7 +357,6 @@ def modal_metrics_api(request):
                 api_metrics_obj.click_count += 1
                 api_metrics_obj.save()
             except Exception as e:
-                print('creating new entry...')
                 ModalMetrics.objects.create(snapshot_date=snapshot_date, product_id_to=product_id_to_obj,
                                             product_id_from=product_id_from_obj, store=store_obj, click_count=1)
 

@@ -53,7 +53,7 @@ def ingest_orders(stores_obj):
             country_code = ''
 
             if customer:
-                first_name = customer.attributes['first_name']
+                first_name = customer.attributes['first_name'] if customer.attributes['first_name'] else ''
                 last_name = customer.attributes['last_name'][0] + '.' if customer.attributes['last_name'] else ''
 
             if shipping_address:
