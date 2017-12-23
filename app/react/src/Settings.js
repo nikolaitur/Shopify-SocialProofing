@@ -371,7 +371,7 @@ class Settings extends Component {
               <div>Preview of how your modal will look.</div>
               <div style={modalPreviewStyle}>
                 <div style={imageContainer}>
-                  <img style={imageStyle} src="http://via.placeholder.com/70x70"/>
+                  <img style={imageStyle} src="http://via.placeholder.com/80x80"/>
                     <span style={specialTextStyles}>{textObj.socialSettingText}</span>
                     <span style={productNameTextStyles}>{textObj.productName}</span>
                     <span style={timestampTextStyles}>{textObj.socialTime}</span>

@@ -42185,7 +42185,7 @@ var Settings = function (_Component) {
                 _react2.default.createElement(
                   'div',
                   { style: imageContainer },
-                  _react2.default.createElement('img', { style: imageStyle, src: 'http://via.placeholder.com/70x70' }),
+                  _react2.default.createElement('img', { style: imageStyle, src: 'http://via.placeholder.com/80x80' }),
                   _react2.default.createElement(
                     'span',
                     { style: specialTextStyles },
