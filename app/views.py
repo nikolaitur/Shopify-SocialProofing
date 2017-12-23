@@ -12,7 +12,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.db.models import Sum
 
 from .utils import authenticate, parse_params, find_products_from_social_scope
-from .decorators import shop_login_required, api_authentication, track_statistics
+from .decorators import track_statistics
 from .models import Store, StoreSettings, Modal, Orders, Product, Collection, ModalMetrics, Webhooks
 from django.core import serializers
 from datetime import date
@@ -131,7 +131,6 @@ def index(request):
 
 @track_statistics
 @xframe_options_exempt
-@shop_login_required
 def store_settings(request):
     """
     App settings.
@@ -143,8 +142,6 @@ def store_settings(request):
 
 @track_statistics
 @xframe_options_exempt
-@shop_login_required
-@api_authentication
 def store_settings_api(request, store_name):
     """
     Retrieve, update or delete store settings.
@@ -199,38 +196,6 @@ def store_settings_api(request, store_name):
         return HttpResponse('Success', status=200)
 
     return HttpResponseBadRequest(status=400)
-
-
-@track_statistics
-@xframe_options_exempt
-@shop_login_required
-@api_authentication
-def orders_api(request, store_name):
-    """
-    Return all orders for a given store name, e.g. mystore.myshopify.com.
-    """
-    if request.method == 'GET':
-        qs1 = Orders.objects.filter(store__store_name=store_name)
-        qs_json = serializers.serialize('json', qs1)
-        return HttpResponse(qs_json, content_type='application/json')
-
-    return HttpResponseBadRequest('Invalid request')
-
-
-@track_statistics
-@xframe_options_exempt
-@shop_login_required
-@api_authentication
-def products_api(request, store_name):
-    """
-    Return all orders for a given store name, e.g. mystore.myshopify.com.
-    """
-    if request.method == 'GET':
-        qs1 = Product.objects.filter(store__store_name=store_name)
-        qs_json = serializers.serialize('json', qs1)
-        return HttpResponse(qs_json, content_type='application/json')
-
-    return HttpResponseBadRequest('Invalid request')
 
 
 @track_statistics

@@ -25,10 +25,10 @@ class AuthenticationTests(TestCase):
 
     def test_invalid_shop_name_regex_auth_callback(self):
         response1 = self.client.get(reverse('auth_callback'), {'hmac': '123',
-                                                              'locale': '123',
-                                                              'protocol': '123',
-                                                              'shop': 'does-not-end-in-my-shopify-dot-com',
-                                                              'timestamp': '123'})
+                                                               'locale': '123',
+                                                               'protocol': '123',
+                                                               'shop': 'does-not-end-in-my-shopify-dot-com',
+                                                               'timestamp': '123'})
 
         response2 = self.client.get(reverse('auth_callback'), {'hmac': '123',
                                                                'locale': '123',
@@ -144,28 +144,6 @@ class SessionTests(TestCase):
             # Reset self.client
             self.client = Client()
 
-    def test_views_based_on_session(self):
-        with self.settings(DEVELOPMENT_MODE='TEST'):
-            self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
-            session = self.client.session
-
-            response = self.client.get(reverse('store_settings'))
-            self.assertEqual(response.status_code, 200)
-
-            # Reset self.client
-            self.client = Client()
-
-        with self.settings(DEVELOPMENT_MODE='PRODUCTION'):
-            self.client.get(reverse('index') + '?hmac=123&locale=123&protocol=123&shop=123&timestamp=123')
-            session = self.client.session
-
-            response = self.client.get(reverse('store_settings'))
-            self.assertRedirects(response, expected_url=reverse('install'), status_code=302,
-                                 fetch_redirect_response=False)
-
-            # Reset self.client
-            self.client = Client()
-
 
 class TestStoreSettingsAPI(TestCase):
     """
@@ -176,20 +154,6 @@ class TestStoreSettingsAPI(TestCase):
 
     def setUp(self):
         self.client = Client()
-
-    def test_get_valid_request(self):
-        with self.settings(DEVELOPMENT_MODE='TEST'):
-            response = self.client.get(
-                reverse('store_settings_api', kwargs={'store_name': 'not-setup-store.myshopify.com'}))
-            self.assertEqual(response.status_code, 200)
-
-        with self.settings(DEVELOPMENT_MODE='PRODUCTION'):
-            # No cookies
-            response = self.client.get(
-                reverse('store_settings_api', kwargs={'store_name': 'not-setup-store.myshopify.com'}))
-            self.assertEqual(response.status_code, 302)
-
-            # TODO: Add unit test with cookies
 
     def test_post_valid_request(self):
         with self.settings(DEVELOPMENT_MODE='TEST'):
