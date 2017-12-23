@@ -303,10 +303,10 @@
 
       var timestampTextStyles = {
         position: "absolute",
-        width: "75%",
-        left: "75%",
+        textAlign: "right",
+        width: "50%",
+        left: "48%",
         top: "60px",
-        right: "10px",
         fontFamily: "Tahoma",
         fontSize: "12px",
         color: "#1A6BCA"
