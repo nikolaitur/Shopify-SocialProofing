@@ -42226,7 +42226,7 @@ var Settings = function (_Component) {
             _react2.default.createElement(
               _polaris.FooterHelp,
               null,
-              'Suggestions or Feedback? Email us at Michael.John.Devs@gmail.com'
+              'Suggestions or Feedback? Email us at socialproof.samurai@gmail.com'
             )
           )
         )

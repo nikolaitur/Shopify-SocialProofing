@@ -383,7 +383,7 @@ class Settings extends Component {
           <Button onClick={this.handleClick} primary>Submit & Save</Button> {this.state.settingSaved && <span>Thank you! Your settings have been updated.</span>}
           </Layout.Section>
           <Layout.Section>
-            <FooterHelp>Suggestions or Feedback? Email us at Michael.John.Devs@gmail.com</FooterHelp>
+            <FooterHelp>Suggestions or Feedback? Email us at socialproof.samurai@gmail.com</FooterHelp>
           </Layout.Section>
         </Layout>
       </Page>
