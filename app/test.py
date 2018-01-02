@@ -11,18 +11,6 @@ class AuthenticationTests(TestCase):
         # Every test needs access to the request factory.
         self.client = Client()
 
-    def test_valid_shop_redirects(self):
-        # Test that we return the correct redirect for a valid shop url
-        response = self.client.get(reverse('install'), SERVER_NAME='mystore.myshopify.com')
-
-        # Valid url should redirect
-        self.assertEqual(response.status_code, 302)
-
-        # The permission url should match the following pattern
-        self.assertTrue(fnmatch.fnmatch(response.url,
-                                        'https://mystore.myshopify.com/admin/oauth/authorize'
-                                        '?client_id=*&scope=*&redirect_uri=*'))
-
     def test_invalid_shop_name_regex_auth_callback(self):
         response1 = self.client.get(reverse('auth_callback'), {'hmac': '123',
                                                                'locale': '123',
@@ -77,15 +65,6 @@ class EntryPointTests(TestCase):
 
     def setUp(self):
         self.client = Client()
-
-    def test_unregistered_store(self):
-        # Store not registered app and not set up settings.
-        shop = 'foobarbaz'
-
-        with self.settings(DEVELOPMENT_MODE='TEST'):
-            response = self.client.get(
-                reverse('index') + '?hmac=123&locale=123&protocol=123&shop={}&timestamp=123'.format(shop))
-        self.assertRedirects(response, expected_url=reverse('install'), status_code=302, fetch_redirect_response=False)
 
     def test_registered_store_and_not_setup(self):
         # Store registered app but not set up settings.

@@ -33,31 +33,13 @@ if settings.DEVELOPMENT_MODE == 'PRODUCTION':
 
 
 @track_statistics
-def install(request):
-    """
-    Redirect user to the shopify page to authenticate our app.
-    Example request from: https://mystore.myshopify.com
-    """
-    try:
-        shopify.Session.setup(api_key=settings.API_KEY, secret=settings.API_SECRET)
-        shop = urlparse(request.build_absolute_uri())[1]
-        session = shopify.Session(shop)
-        permission_url = session.create_permission_url(scope=settings.SHOPIFY_API_SCOPE,
-                                                       redirect_uri=settings.SHOPIFY_AUTH_CALLBACK_URL)
-        return redirect(permission_url)
-
-    except Exception as e:
-        logger.error(e)
-        return HttpResponseBadRequest(e)
-
-
-@track_statistics
 def auth_callback(request):
     """
     After the user has approved our app, they are redirected from Shopify to us with a temporary code.
     We use this temporary code in exchange for a permanent one with offline access and store it in our db.
     """
     try:
+        print('/auth_callback URL is {}'.format(request.build_absolute_uri()))
         session = authenticate(request)
         params = parse_params(request)
 
@@ -78,7 +60,7 @@ def auth_callback(request):
                                                                   'shopify_api_scope': ','.join(
                                                                       settings.SHOPIFY_API_SCOPE)})
 
-        return redirect('https://' + params['shop'] + '/admin/apps')
+        return redirect('https://' + params['shop'] + '/admin/apps/' + settings.API_KEY)
     except Exception as e:
         logger.error(e)
         return HttpResponseBadRequest(e)
@@ -109,7 +91,12 @@ def index(request):
         exists_in_store_table = Store.objects.filter(store_name=store_name).exists()
 
         if not exists_in_store_table and not exists_in_store_settings_table:
-            return HttpResponseRedirect(reverse('install'))
+            # First time install for new users
+            shopify.Session.setup(api_key=settings.API_KEY, secret=settings.API_SECRET)
+            session = shopify.Session(store_name)
+            permission_url = session.create_permission_url(scope=settings.SHOPIFY_API_SCOPE,
+                                                           redirect_uri=settings.SHOPIFY_AUTH_CALLBACK_URL)
+            return redirect(permission_url)
 
         if not exists_in_store_settings_table:
             # Populate database with default settings
