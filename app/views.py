@@ -39,7 +39,6 @@ def auth_callback(request):
     We use this temporary code in exchange for a permanent one with offline access and store it in our db.
     """
     try:
-        print('/auth_callback URL is {}'.format(request.build_absolute_uri()))
         session = authenticate(request)
         params = parse_params(request)
 
