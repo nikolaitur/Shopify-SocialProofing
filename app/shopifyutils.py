@@ -41,7 +41,7 @@ def ingest_orders(stores_obj):
         session = shopify.Session(stores_obj.store_name, stores_obj.permanent_token)
         shopify.ShopifyResource.activate_session(session)
         created_at_min = datetime.datetime.now() - datetime.timedelta(days=10)
-        orders = shopify.Order.find(financial_status='paid', status='shipped', created_at_min=created_at_min)
+        orders = shopify.Order.find(financial_status='paid', created_at_min=created_at_min)
 
         for order in orders:
             customer = order.attributes.get('customer', None)
@@ -160,5 +160,5 @@ if __name__ == '__main__':
         if stores_obj.active:
             ingest_products(stores_obj)
             ingest_orders(stores_obj)
-            #create_webhook(stores_obj)
+            # create_webhook(stores_obj)
     print('Success.')
