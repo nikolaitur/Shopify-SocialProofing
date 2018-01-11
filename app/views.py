@@ -201,15 +201,26 @@ def modal_api(request, store_name, product_id):
             look_back = look_back_qs.values('look_back')[0]['look_back']
             time_threshold = timezone.now() - timedelta(seconds=look_back * 60 * 60)
 
-            product_id_social = choice(find_products_from_social_scope(store_name, product_id))
-            product_obj = Product.objects.filter(product_id=product_id_social).first()
+            product_id_socials = find_products_from_social_scope(store_name, product_id)
 
-            order_obj = Orders.objects \
-                .filter(store__store_name=store_name) \
-                .filter(product__product_id=product_id_social) \
-                .filter(processed_at__range=[time_threshold, timezone.now()])
-            order_obj_first = order_obj.first()
+            product_id_social = None
+            while len(product_id_socials) != 0:
+                # Keep checking for a related product id with an order
+                product_id_social = choice(product_id_socials)
+
+                order_obj = Orders.objects \
+                    .filter(store__store_name=store_name) \
+                    .filter(product__product_id=product_id_social) \
+                    .filter(processed_at__range=[time_threshold, timezone.now()])
+                order_obj_first = order_obj.first()
+
+                if order_obj_first is not None:
+                    break
+
+                product_id_socials.remove(product_id_social)
+
             modal_obj = Modal.objects.filter(store__store_name=store_name).first()
+            product_obj = Product.objects.filter(product_id=product_id_social).first()
 
             collection_obj = Collection.objects.filter(product__product_id=product_id_social).values('collection_id')
             collection_ids = ','.join([k['collection_id'] for k in list(collection_obj)])
