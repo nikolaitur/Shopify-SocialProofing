@@ -173,7 +173,7 @@
         timestampText = convertedTimeObj.convertedTime + " " + convertedTimeObj.units + " ago"
       } else {
         // Default to "purchase" social_setting as fallback
-        if (data.last_order_qty == 1) {
+        if (data.person_qty_from_look_back == 1) {
           modalSpecialText = data.person_qty_from_look_back + " person purchased";
         } else {
           modalSpecialText = data.person_qty_from_look_back + " people purchased";
