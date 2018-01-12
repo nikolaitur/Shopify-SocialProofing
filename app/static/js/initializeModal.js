@@ -64,7 +64,7 @@
       }
 
       if (data.social_setting == "purchase") {
-        if (!data.qty_from_look_back) {
+        if (!data.person_qty_from_look_back) {
           console.log('no items were sold within lookback period');
           return false;
         }
@@ -174,9 +174,9 @@
       } else {
         // Default to "purchase" social_setting as fallback
         if (data.last_order_qty == 1) {
-          modalSpecialText = data.last_order_qty + " person purchased";
+          modalSpecialText = data.person_qty_from_look_back + " person purchased";
         } else {
-          modalSpecialText = data.last_order_qty + " people purchased";
+          modalSpecialText = data.person_qty_from_look_back + " people purchased";
         }
         convertedTimeObj = api.convertDaysToTimestampText(data.look_back/24);
 

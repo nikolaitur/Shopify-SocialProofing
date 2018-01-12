@@ -257,7 +257,8 @@ def modal_api(request, store_name, product_id):
             response_dict['last_order_qty'] = order_obj_first.qty if hasattr(order_obj_first, 'qty') else None
             response_dict['processed_at'] = order_obj_first.processed_at if hasattr(order_obj_first,
                                                                                     'processed_at') else None
-            response_dict['qty_from_look_back'] = order_obj.aggregate(Sum('qty'))['qty__sum']
+            response_dict['person_qty_from_look_back'] = order_obj.count()
+            response_dict['item_qty_from_look_back'] = order_obj.aggregate(Sum('qty'))['qty__sum']
 
             return JsonResponse(response_dict, safe=False)
         except Exception as e:
