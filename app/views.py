@@ -341,3 +341,14 @@ def webhooks(request):
             return HttpResponseBadRequest('Something bad happened with uninstall {}'.format(e))
 
     return HttpResponseBadRequest('Invalid request')
+
+
+@track_statistics
+def installation_guide(request):
+    """
+    Installation instructions for adding script tag via liquid files.
+    """
+
+    template = loader.get_template('app/installation_guide.html')
+    params = {}
+    return HttpResponse(template.render(params, request))
