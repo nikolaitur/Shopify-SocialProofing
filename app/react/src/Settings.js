@@ -49,6 +49,10 @@ class Settings extends Component {
         console.log('error' + e);
     });
   }
+  
+  componentDidMount() {
+     window.scrollTo(0,0)
+  }
 
   showSaveStatus () {
     this.setState({settingSaved: true});
@@ -185,7 +189,6 @@ class Settings extends Component {
        productName: "",
        socialTime: ""
      }
-     console.log("socialSetting ", socialSetting)
 
      if (socialSetting[0] === 'latest') {
        textObj.socialSettingText = "Victoria Y. purchased a"
@@ -207,7 +210,7 @@ class Settings extends Component {
       backgroundColor: "white",
       boxShadow: "0 0 5px #888",
       marginTop: "40px",
-      marginLeft: this.state.location[0] === "lower-right" ? "230px" : "0px"
+      marginLeft: this.state.location[0] === "lower-right" ? "30%" : "0px"
     }
     const imageContainer = {
       width: "35%",
