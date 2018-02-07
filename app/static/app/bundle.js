@@ -41865,7 +41865,7 @@ var FAQ = function (_Component) {
                   "Go to the Social Proof Samurai ",
                   _react2.default.createElement(
                      "a",
-                     { href: "https://apps.shopify.com/social-proof-samurai" },
+                     { href: "https://apps.shopify.com/social-proof-samurai", target: "_blank" },
                      "app listing page"
                   ),
                   ". Click the installation button labelled \"Get\". After approving the permissions that the app requires, you will be redirected to the Social Proof Samurai settings page. We set the default social proof settings for you, but feel free to edit them to best suit your needs."
@@ -41900,7 +41900,7 @@ var FAQ = function (_Component) {
                   "If you had an order within the last 7 days or within your specific look back period and its not showing up, then your theme files may be preventing it from popping up. Please follow the manual installation instructions ",
                   _react2.default.createElement(
                      "a",
-                     { href: "https://socialproof-samurai.herokuapp.com/installation_guide" },
+                     { href: "https://socialproof-samurai.herokuapp.com/installation_guide", target: "_blank" },
                      "here."
                   )
                ),
