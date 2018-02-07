@@ -14,7 +14,7 @@ class FAQ extends Component {
           <br/>
        		<ul>
             <b>What is the procedure to install this app{`?`}</b>
-         		<p>Go to the Social Proof Samurai <a href="https://apps.shopify.com/social-proof-samurai">app listing page</a>. Click the installation button labelled "Get". After approving the permissions that the app requires, you will be redirected to the Social Proof Samurai settings page. We set the default social proof settings for you, but feel free to edit them to best suit your needs.</p>
+         		<p>Go to the Social Proof Samurai <a href="https://apps.shopify.com/social-proof-samurai" target="_blank">app listing page</a>. Click the installation button labelled "Get". After approving the permissions that the app requires, you will be redirected to the Social Proof Samurai settings page. We set the default social proof settings for you, but feel free to edit them to best suit your needs.</p>
             <br/>
          		<b>When will my social proof data get refreshed{`?`}</b>
          		<p>We scan your orders database every few hours in order to make sure the social proof data on your products is as up to date as possible.</p>
@@ -22,7 +22,7 @@ class FAQ extends Component {
          		<b>No pop up is showing on my product pages</b>
          		<p>The furthest Social Proof Samurai will check orders is within the last 7 days. If a product does not have an order within that time, then no pop up will appear.</p>
             <br/>
-         		<p>If you had an order within the last 7 days or within your specific look back period and its not showing up, then your theme files may be preventing it from popping up. Please follow the manual installation instructions <a href="https://socialproof-samurai.herokuapp.com/installation_guide">here.</a></p>
+         		<p>If you had an order within the last 7 days or within your specific look back period and its not showing up, then your theme files may be preventing it from popping up. Please follow the manual installation instructions <a href="https://socialproof-samurai.herokuapp.com/installation_guide" target="_blank">here.</a></p>
             <br/>
          		<b>Does the Social Proof Samurai app affect my theme files{`?`}</b>
          		<p>No. This app does not make any changes to your theme/liquid files.</p>
